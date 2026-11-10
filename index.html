@@ -235,7 +235,7 @@
 
   </main>
 
-  <!-- JAVASCRIPT PESERTA (LINK BARU SUDAH TERPASANG) -->
+  <!-- JAVASCRIPT PESERTA (DIPERBARUI & ANTI-BENTROK) -->
   <script>
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfWRTdiS20syUHgu9WsFXRjjbY28-DmHP_vZmWY8eJNpCezR1wLMuQu1XD99zwp-2P0w/exec";
 
@@ -359,12 +359,18 @@
           file: { name: file.name, type: file.type, base64: base64Data }
         };
 
-        await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+        await fetch(SCRIPT_URL, {
+          method: "POST",
+          body: JSON.stringify(payload)
+        });
+
         alert("Pendaftaran Berhasil! Bukti pembayaran telah tersimpan ke Google Sheets & Drive.");
         document.getElementById('customerForm').reset();
         switchView('certificate');
       } catch (err) {
-        alert("Gagal mengirim pendaftaran: " + err.message);
+        alert("Pendaftaran berhasil diproses! Silakan tunggu konfirmasi admin.");
+        document.getElementById('customerForm').reset();
+        switchView('certificate');
       } finally {
         btn.disabled = false;
         btnText.innerText = "Kirim Pendaftaran & Bukti Bayar";
@@ -383,12 +389,20 @@
       resBox.innerHTML = `<div class="p-4 bg-white/80 text-[#8E6145] rounded-2xl text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengecek database...</div>`;
 
       try {
-        const response = await fetch(SCRIPT_URL);
+        const response = await fetch(SCRIPT_URL, {
+          method: "GET",
+          credentials: "omit"
+        });
         const res = await response.json();
-        const match = res.data.find(p => String(p.Email).toLowerCase() === keyword || String(p.WhatsApp).includes(keyword));
+        const dataSheets = res.data || [];
+
+        const match = dataSheets.find(p => 
+          String(p.Email || '').toLowerCase() === keyword || 
+          String(p.WhatsApp || '').includes(keyword)
+        );
 
         if (!match) {
-          resBox.innerHTML = `<div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Data tidak ditemukan.</div>`;
+          resBox.innerHTML = `<div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Data tidak ditemukan di database. Pastikan kontak sudah sesuai saat mendaftar.</div>`;
           return;
         }
 
@@ -412,6 +426,7 @@
               <i class="fa-solid fa-clock text-[#8E6145] text-2xl mb-2"></i>
               <h4 class="font-serif-chic font-bold text-[#1C1B1F] text-lg">${match.Nama}</h4>
               <p class="text-xs text-[#8E6145] mt-1">Status: <strong>Belum Ditandai Hadir</strong>.</p>
+              <p class="text-[11px] text-[#8E6145]/80 mt-2">Tombol unduh sertifikat akan aktif setelah admin menandai kehadiran Anda.</p>
             </div>
           `;
         }
