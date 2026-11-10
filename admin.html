@@ -16,9 +16,7 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
 
-  <!-- ============================================== -->
-  <!-- 1. GERBANG LOGIN ADMIN (TAMPIL PERTAMA KALI)   -->
-  <!-- ============================================== -->
+  <!-- GERBANG LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-[#FAEEE8] flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#F7C1D1] max-w-sm w-full p-8 text-center">
       <div class="w-14 h-14 bg-[#F7C1D1] text-[#1C1B1F] rounded-full flex items-center justify-center mx-auto mb-4 text-xl border border-[#D4A394]">
@@ -27,7 +25,6 @@
       <h2 class="font-serif-chic text-2xl font-bold text-[#1C1B1F]">Login Pengelola</h2>
       <p class="text-xs text-[#8E6145] mt-1 mb-6">Akses khusus admin acara & keuangan.</p>
 
-      <!-- Pesan Peringatan Jika Salah Password -->
       <div id="loginErrorMsg" class="hidden mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium">
         <i class="fa-solid fa-circle-exclamation mr-1"></i> Username atau Password salah!
       </div>
@@ -35,11 +32,11 @@
       <div class="space-y-4 text-left">
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Username Admin</label>
-          <input type="text" id="adminUser" placeholder="Masukkan username" onkeydown="handleEnterKey(event)" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+          <input type="text" id="adminUser" placeholder="admin" onkeydown="handleEnterKey(event)" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
         </div>
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Password</label>
-          <input type="password" id="adminPass" placeholder="Masukkan password" onkeydown="handleEnterKey(event)" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+          <input type="password" id="adminPass" placeholder="admin" onkeydown="handleEnterKey(event)" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
         </div>
         
         <div class="bg-[#FAEEE8] p-3 rounded-xl text-[11px] text-center text-[#8E6145]">
@@ -53,9 +50,7 @@
     </div>
   </div>
 
-  <!-- ============================================== -->
-  <!-- 2. DASBOR UTAMA ADMIN (SETELAH LOGIN)          -->
-  <!-- ============================================== -->
+  <!-- DASBOR UTAMA ADMIN -->
   <div id="adminDashboard" class="hidden max-w-7xl mx-auto w-full space-y-8">
 
     <!-- Header Panel -->
@@ -311,9 +306,9 @@
     </div>
   </div>
 
-  <!-- JAVASCRIPT ADMIN -->
+  <!-- JAVASCRIPT ADMIN (LINK APPS SCRIPT BARU ANDA SUDAH TERPASANG) -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwX3JhuM1QqMauuuqbv_VlXBpM4xrXUaGrCIpa1eM7vQeMUg3r7hmH0TsoZiJIM_v6b/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSw_mAm_Vd8Prp5zpOsRqv9s67B_QZUS7if6lQaraFsU0lKoS1tmssBfrQpowSEyKc/exec";
 
     let participants = [];
     let uploadedQrisBase64 = "";
@@ -340,21 +335,18 @@
       updateFilterDropdown();
     }
 
-    // Cek apakah admin sudah pernah login sebelumnya
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('pixy_admin_logged') === 'true') {
         openDashboardDirectly();
       }
     });
 
-    // Handle tombol Enter pada form login
     function handleEnterKey(event) {
       if (event.key === 'Enter') {
         executeAdminLogin();
       }
     }
 
-    // FUNGSI LOGIN ADMIN (ANTI-GAGAL)
     function executeAdminLogin() {
       const u = document.getElementById('adminUser').value.trim();
       const p = document.getElementById('adminPass').value.trim();
