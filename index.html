@@ -104,7 +104,6 @@
                 <input type="email" id="regEmail" required placeholder="emailanda@example.com" class="w-full px-4 py-3 rounded-2xl bg-[#FAEEE8]/60 border border-[#D4A394]/50 focus:bg-white focus:ring-2 focus:ring-[#8E6145] focus:outline-none text-sm transition">
               </div>
 
-              <!-- Pilihan Acara -->
               <div class="md:col-span-2">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-1.5">Pilih Acara / Lokasi Kegiatan *</label>
                 <select id="regPilihanAcara" onchange="onEventSelectionChange()" required class="w-full px-4 py-3 rounded-2xl bg-[#FAEEE8]/60 border border-[#D4A394]/50 focus:bg-white focus:ring-2 focus:ring-[#8E6145] text-sm font-medium transition cursor-pointer">
@@ -112,7 +111,6 @@
                 <span class="text-[11px] text-[#8E6145]/70 mt-1 block">Biaya registrasi otomatis mengikuti acara yang Anda pilih.</span>
               </div>
 
-              <!-- Kategori Peserta -->
               <div class="md:col-span-2">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-2">Kategori Peserta *</label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -140,7 +138,6 @@
               <h3 class="font-serif-chic text-lg font-bold text-[#1C1B1F]">Rincian & Pembayaran</h3>
             </div>
 
-            <!-- PILIHAN METODE -->
             <div class="mb-5">
               <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-2">Metode Pembayaran *</label>
               <div class="grid grid-cols-2 gap-3">
@@ -155,7 +152,7 @@
               </div>
             </div>
 
-            <!-- KOTAK 1: TRANSFER BANK -->
+            <!-- TRANSFER BANK -->
             <div id="box-transfer-bank" class="bg-gradient-to-br from-[#FAEEE8] to-[#F7C1D1]/30 border border-[#D4A394] rounded-3xl p-5 mb-5 transition-all">
               <div class="flex justify-between items-start">
                 <div>
@@ -173,7 +170,7 @@
               </div>
             </div>
 
-            <!-- KOTAK 2: QRIS OTOMATIS -->
+            <!-- QRIS -->
             <div id="box-qris" class="hidden bg-gradient-to-br from-[#FAEEE8] to-[#BCE3EE]/30 border border-[#BCE3EE] rounded-3xl p-6 mb-5 text-center transition-all">
               <span class="text-[10px] bg-white border border-[#BCE3EE] text-[#1C1B1F] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Scan Kode QRIS</span>
               <div class="font-serif-chic text-2xl font-bold text-[#1C1B1F] mt-2 mb-1 display-biaya-txt">Rp 50.000,-</div>
@@ -235,9 +232,9 @@
 
   </main>
 
-  <!-- JAVASCRIPT PESERTA (DIPERBARUI & ANTI-BENTROK) -->
+  <!-- JAVASCRIPT PESERTA (URL BARU SUDAH DITANAM) -->
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfWRTdiS20syUHgu9WsFXRjjbY28-DmHP_vZmWY8eJNpCezR1wLMuQu1XD99zwp-2P0w/exec";
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec";
 
     let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
       judulAcara: "Beauty is in all of us",
@@ -426,7 +423,6 @@
               <i class="fa-solid fa-clock text-[#8E6145] text-2xl mb-2"></i>
               <h4 class="font-serif-chic font-bold text-[#1C1B1F] text-lg">${match.Nama}</h4>
               <p class="text-xs text-[#8E6145] mt-1">Status: <strong>Belum Ditandai Hadir</strong>.</p>
-              <p class="text-[11px] text-[#8E6145]/80 mt-2">Tombol unduh sertifikat akan aktif setelah admin menandai kehadiran Anda.</p>
             </div>
           `;
         }
