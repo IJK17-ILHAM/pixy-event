@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dasbor Pengelola & Manajemen Acara</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #FAEEE8; color: #1C1B1F; }
+    .font-serif-chic { font-family: 'Playfair Display', serif; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
+
+  <!-- GERBANG LOGIN -->
+  <div id="loginScreen" class="fixed inset-0 bg-[#FAEEE8] flex items-center justify-center p-4 z-50">
+    <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#F7C1D1] max-w-sm w-full p-8 text-center">
+      <div class="w-14 h-14 bg-[#F7C1D1] text-[#1C1B1F] rounded-full flex items-center justify-center mx-auto mb-4 text-xl border border-[#D4A394]">
+        <i class="fa-solid fa-lock"></i>
+      </div>
+      <h2 class="font-serif-chic text-2xl font-bold text-[#1C1B1F]">Login Pengelola</h2>
+      <p class="text-xs text-[#8E6145] mt-1 mb-6">Akses khusus admin acara & keuangan.</p>
+
+      <form onsubmit="handleAdminLogin(event)" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Username</label>
+          <input type="text" id="adminUser" required placeholder="admin" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Password</label>
+          <input type="password" id="adminPass" required placeholder="admin" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+        </div>
+        <div class="bg-[#FAEEE8] p-2.5 rounded-xl text-[11px] text-center text-[#8E6145]">
+          Akses Default: <b class="font-mono text-[#1C1B1F]">admin</b> / <b class="font-mono text-[#1C1B1F]">admin</b>
+        </div>
+        <button type="submit" class="w-full py-3.5 bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold rounded-full text-sm transition">
+          Masuk ke Dasbor
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DASBOR UTAMA ADMIN -->
+  <div id="adminDashboard" class="hidden max-w-7xl mx-auto w-full space-y-8">
+
+    <!-- Header Panel -->
+    <div class="bg-[#1C1B1F] rounded-[2rem] p-6 sm:p-8 text-white flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <span class="text-xs bg-[#A3D9C9] text-[#1C1B1F] px-3 py-1 rounded-full font-bold uppercase tracking-wider">Akses Penuh Admin</span>
+        <h1 class="font-serif-chic text-2xl sm:text-3xl font-bold mt-2">Dasbor Pengelola Acara</h1>
+        <p class="text-[#D4A394] text-xs sm:text-sm">Kelola pendaftaran, QRIS, dan lokasi acara secara real-time.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button onclick="fetchSheetData()" class="px-4 py-2.5 bg-white/10 hover:bg-white/20 text-white rounded-full text-xs font-semibold transition flex items-center gap-2">
+          <i class="fa-solid fa-rotate"></i> Refresh
+        </button>
+        <button onclick="openSettingsModal()" class="px-4 py-2.5 bg-[#D4A394] hover:bg-[#8E6145] text-[#1C1B1F] hover:text-white rounded-full text-xs font-semibold transition flex items-center gap-2">
+          <i class="fa-solid fa-qrcode"></i> Pengaturan & QRIS
+        </button>
+        <button onclick="logoutAdmin()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white rounded-full text-xs font-semibold transition flex items-center gap-2">
+          <i class="fa-solid fa-right-from-bracket"></i> Keluar
+        </button>
+      </div>
+    </div>
+
+    <!-- Ringkasan Global KPI -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="bg-white p-5 rounded-3xl border border-[#F7C1D1] shadow-sm">
+        <p class="text-[11px] text-[#8E6145] uppercase font-bold tracking-wider">Total Pendaftar</p>
+        <h4 class="font-serif-chic text-3xl font-bold text-[#1C1B1F] mt-1" id="stat-total">0</h4>
+      </div>
+      <div class="bg-white p-5 rounded-3xl border border-[#F7C1D1] shadow-sm">
+        <p class="text-[11px] text-amber-700 uppercase font-bold tracking-wider">Perlu Validasi</p>
+        <h4 class="font-serif-chic text-3xl font-bold text-amber-700 mt-1" id="stat-pending">0</h4>
+      </div>
+      <div class="bg-white p-5 rounded-3xl border border-[#F7C1D1] shadow-sm">
+        <p class="text-[11px] text-emerald-700 uppercase font-bold tracking-wider">Terverifikasi</p>
+        <h4 class="font-serif-chic text-3xl font-bold text-emerald-700 mt-1" id="stat-verified">0</h4>
+      </div>
+      <div class="bg-white p-5 rounded-3xl border border-[#F7C1D1] shadow-sm">
+        <p class="text-[11px] text-[#8E6145] uppercase font-bold tracking-wider">Hadir (Sertifikat)</p>
+        <h4 class="font-serif-chic text-3xl font-bold text-[#8E6145] mt-1" id="stat-attended">0</h4>
+      </div>
+    </div>
+
+    <!-- TAB MENU NAVIGASI ADMIN -->
+    <div class="flex flex-wrap items-center gap-2 p-1.5 bg-white rounded-full border border-[#F7C1D1] max-w-fit shadow-sm">
+      <button onclick="switchAdminTab('peserta')" id="tab-btn-peserta" class="px-5 py-2.5 rounded-full text-xs font-bold transition bg-[#1C1B1F] text-white shadow-sm flex items-center gap-2">
+        <i class="fa-solid fa-users"></i>
+        <span>Data Pendaftar</span>
+      </button>
+      <button onclick="switchAdminTab('statistik')" id="tab-btn-statistik" class="px-5 py-2.5 rounded-full text-xs font-bold transition text-[#8E6145] hover:bg-[#FAEEE8] flex items-center gap-2">
+        <i class="fa-solid fa-chart-pie text-[#D4A394]"></i>
+        <span>Statistik Kategori Acara</span>
+      </button>
+      <button onclick="switchAdminTab('acara')" id="tab-btn-acara" class="px-5 py-2.5 rounded-full text-xs font-bold transition text-[#8E6145] hover:bg-[#FAEEE8] flex items-center gap-2">
+        <i class="fa-solid fa-ticket text-[#D4A394]"></i>
+        <span>Kelola Acara & Tiket</span>
+      </button>
+    </div>
+
+    <!-- PANEL 1: DATA PENDAFTAR -->
+    <section id="panel-peserta" class="space-y-4">
+      <div class="bg-white rounded-[2rem] border border-[#F7C1D1] shadow-sm overflow-hidden">
+        <div class="px-6 py-4 border-b border-[#F7C1D1] flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+          <h3 class="font-serif-chic font-bold text-[#1C1B1F] text-lg">Daftar Pendaftar (Google Sheets)</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-[#8E6145] font-semibold">Filter:</span>
+            <select id="filterAcaraTable" onchange="renderAdminTable()" class="px-3 py-1.5 rounded-xl border border-[#D4A394] bg-[#FAEEE8]/60 text-xs font-semibold focus:outline-none">
+              <option value="ALL">Semua Acara</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm text-[#1C1B1F]">
+            <thead class="bg-[#FAEEE8] text-[#8E6145] text-xs uppercase font-bold">
+              <tr>
+                <th class="px-6 py-4">Peserta & Kategori</th>
+                <th class="px-6 py-4">Kontak</th>
+                <th class="px-6 py-4">Pilihan Acara</th>
+                <th class="px-6 py-4">Bukti di Drive</th>
+                <th class="px-6 py-4">Status Bayar</th>
+                <th class="px-6 py-4">Kehadiran</th>
+                <th class="px-6 py-4 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="participantTableBody" class="divide-y divide-[#F7C1D1]/40">
+              <tr><td colspan="7" class="text-center py-8 text-[#8E6145]">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- PANEL 2: STATISTIK KATEGORI ACARA -->
+    <section id="panel-statistik" class="hidden space-y-4">
+      <div class="bg-white rounded-[2rem] border border-[#F7C1D1] p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex justify-between items-center border-b border-[#F7C1D1]/60 pb-4">
+          <div>
+            <span class="text-[10px] bg-[#BCE3EE] text-[#1C1B1F] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Statistik Rinci</span>
+            <h3 class="font-serif-chic text-xl font-bold text-[#1C1B1F] mt-1">Rincian Kategori di Setiap Acara</h3>
+          </div>
+          <button onclick="switchAdminTab('peserta')" class="text-xs text-[#8E6145] hover:text-[#1C1B1F] font-semibold underline">
+            Kembali ke Tabel
+          </button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="statsCardContainer"></div>
+      </div>
+    </section>
+
+    <!-- PANEL 3: KELOLA ACARA -->
+    <section id="panel-acara" class="hidden space-y-4">
+      <div class="bg-white rounded-[2rem] border border-[#F7C1D1] p-6 sm:p-8 shadow-sm space-y-6">
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#F7C1D1]/60 pb-4">
+          <div>
+            <h3 class="font-serif-chic text-xl font-bold text-[#1C1B1F]">Daftar Lokasi Acara & Harga Tiket</h3>
+          </div>
+          <button onclick="openAddEventModal()" class="px-5 py-2.5 bg-[#1C1B1F] hover:bg-[#8E6145] text-white rounded-full text-xs font-semibold flex items-center gap-2 self-start transition shadow-sm">
+            <i class="fa-solid fa-plus"></i> Tambah Acara Baru
+          </button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3" id="eventCardList"></div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- MODAL: TAMBAH ACARA -->
+  <div id="modalEvent" class="fixed inset-0 bg-[#1C1B1F]/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-xl max-w-sm w-full p-6 border border-[#F7C1D1]">
+      <h3 class="font-serif-chic font-bold text-[#1C1B1F] text-lg mb-4">Tambah Acara / Lokasi</h3>
+      <form onsubmit="handleSaveEvent(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Acara & Lokasi</label>
+          <input type="text" id="evNama" required placeholder="Contoh: Skincare Talkshow Bali" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4A394] text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Harga Tiket (Angka saja)</label>
+          <input type="number" id="evHarga" required placeholder="Contoh: 50000" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4A394] text-sm">
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button type="button" onclick="closeAddEventModal()" class="px-4 py-2 border border-[#8E6145] rounded-full text-xs font-semibold text-[#8E6145]">Batal</button>
+          <button type="submit" class="px-5 py-2 bg-[#1C1B1F] text-white rounded-full text-xs font-semibold">Simpan Acara</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: PENGATURAN TEKS, REKENING & UPLOAD QRIS -->
+  <div id="modalSettings" class="fixed inset-0 bg-[#1C1B1F]/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-xl max-w-lg w-full overflow-hidden border border-[#F7C1D1]">
+      <div class="px-6 py-4 bg-[#FAEEE8] border-b border-[#F7C1D1] flex justify-between items-center">
+        <h3 class="font-serif-chic font-bold text-[#1C1B1F] text-base">Pengaturan Acara, Rekening & QRIS</h3>
+        <button onclick="closeSettingsModal()" class="text-[#8E6145]"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form id="settingsForm" onsubmit="saveSettings(event)" class="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+        
+        <!-- UPLOAD FOTO QRIS -->
+        <div class="bg-[#BCE3EE]/20 p-4 rounded-2xl border border-[#BCE3EE] space-y-2">
+          <label class="block text-xs font-bold uppercase tracking-wider text-[#1C1B1F]">
+            <i class="fa-solid fa-qrcode mr-1"></i> Unggah Gambar Barcode QRIS
+          </label>
+          <input type="file" id="cfgQrisInput" accept="image/*" onchange="previewQrisUpload(event)" class="w-full text-xs text-[#8E6145] file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1C1B1F] file:text-white cursor-pointer">
+          <span class="text-[11px] text-[#8E6145] block">Format JPG/PNG. Otomatis muncul jika peserta memilih metode QRIS.</span>
+
+          <!-- Preview QRIS -->
+          <div id="adminQrisPreviewBox" class="mt-2 text-center hidden">
+            <p class="text-[10px] text-[#8E6145] font-semibold mb-1">Pratinjau QRIS Aktif:</p>
+            <img id="adminQrisPreviewImg" src="" alt="Preview QRIS" class="w-32 h-32 object-contain mx-auto border rounded-xl bg-white p-1 shadow-sm">
+          </div>
+        </div>
+
+        <div class="bg-[#FAEEE8]/60 p-4 rounded-2xl border border-[#D4A394]/40 space-y-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#1C1B1F] mb-1">Judul Utama Halaman Peserta</label>
+            <input type="text" id="cfgJudulAcara" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm bg-white font-medium">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#1C1B1F] mb-1">Deskripsi Singkat / Sub-Judul</label>
+            <textarea id="cfgSubJudulAcara" required rows="2" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm bg-white font-medium"></textarea>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Bank</label>
+            <input type="text" id="cfgBank" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nomor Rekening</label>
+            <input type="text" id="cfgRekening" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Pemilik Rekening</label>
+          <input type="text" id="cfgAtasNama" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Link Folder Google Drive Sertifikat</label>
+          <input type="url" id="cfgDriveUrl" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-mono">
+        </div>
+        <div class="flex justify-end gap-2 pt-4 border-t border-[#F7C1D1]">
+          <button type="button" onclick="closeSettingsModal()" class="px-5 py-2 border border-[#8E6145] rounded-full text-xs font-semibold text-[#8E6145]">Batal</button>
+          <button type="submit" class="px-6 py-2 bg-[#1C1B1F] hover:bg-[#8E6145] text-white rounded-full text-xs font-semibold">Simpan Pengaturan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MODAL: EDIT DATA PESERTA -->
+  <div id="modalEditPeserta" class="fixed inset-0 bg-[#1C1B1F]/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-xl max-w-lg w-full overflow-hidden border border-[#F7C1D1]">
+      <div class="px-6 py-4 bg-[#FAEEE8] border-b border-[#F7C1D1] flex justify-between items-center">
+        <h3 class="font-serif-chic font-bold text-[#1C1B1F] text-base">Edit Data Peserta</h3>
+        <button onclick="closeEditModal()" class="text-[#8E6145]"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form onsubmit="saveEditedParticipant(event)" class="p-6 space-y-4">
+        <input type="hidden" id="editRowIndex">
+        <div>
+          <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Lengkap</label>
+          <input type="text" id="editNama" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">WhatsApp</label>
+            <input type="tel" id="editWhatsapp" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">Email</label>
+            <input type="email" id="editEmail" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3 pt-2 border-t border-[#F7C1D1]">
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">Status Verifikasi</label>
+            <select id="editStatusBayar" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
+              <option value="Menunggu">Menunggu</option>
+              <option value="Terverifikasi">Terverifikasi</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">Status Kehadiran</label>
+            <select id="editStatusKehadiran" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
+              <option value="Belum Hadir">Belum Hadir</option>
+              <option value="Hadir">Hadir (Sertifikat Aktif)</option>
+            </select>
+          </div>
+        </div>
+        <div class="flex justify-end gap-2 pt-4">
+          <button type="button" onclick="closeEditModal()" class="px-5 py-2 border border-[#8E6145] rounded-full text-xs font-semibold text-[#8E6145]">Batal</button>
+          <button type="submit" id="btnSaveEdit" class="px-6 py-2 bg-[#1C1B1F] text-white rounded-full text-xs font-semibold">Simpan ke Sheets</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT ADMIN (URL APPS SCRIPT ANDA SUDAH TERPASANG) -->
+  <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwX3JhuM1QqMauuuqbv_VlXBpM4xrXUaGrCIpa1eM7vQeMUg3r7hmH0TsoZiJIM_v6b/exec";
+
+    let participants = [];
+    let uploadedQrisBase64 = "";
+
+    let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
+      judulAcara: "Beauty is in all of us",
+      subJudulAcara: "Daftarkan kehadiran Anda dan dapatkan sertifikat resmi serta materi eksklusif kegiatan.",
+      bank: "BCA",
+      rekening: "1234-5678-90",
+      atasNama: "Panitia Resmi PIXY",
+      qrisImage: "",
+      driveUrl: "https://drive.google.com/drive/folders/ID_FOLDER_SERTIFIKAT?usp=sharing",
+      daftarAcara: [
+        { id: "EVT-1", nama: "Beauty Class Jakarta - Grand Studio", harga: 50000 },
+        { id: "EVT-2", nama: "Glow Seminar Bandung - Savoy Homann", harga: 75000 },
+        { id: "EVT-3", nama: "Skincare Workshop Surabaya - Grand City", harga: 60000 }
+      ]
+    };
+
+    function saveConfig() {
+      localStorage.setItem('pixy_event_config', JSON.stringify(appConfig));
+      renderEventList();
+      renderStatsCards();
+      updateFilterDropdown();
+    }
+
+    function handleAdminLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('adminUser').value;
+      const p = document.getElementById('adminPass').value;
+      if (u === 'admin' && p === 'admin') {
+        document.getElementById('loginScreen').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        renderEventList();
+        renderStatsCards();
+        updateFilterDropdown();
+        fetchSheetData();
+      } else {
+        alert('Username atau Password Admin salah!');
+      }
+    }
+
+    function logoutAdmin() {
+      document.getElementById('adminDashboard').classList.add('hidden');
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+
+    function switchAdminTab(tabName) {
+      ['peserta', 'statistik', 'acara'].forEach(t => {
+        document.getElementById(`panel-${t}`).classList.add('hidden');
+        const btn = document.getElementById(`tab-btn-${t}`);
+        btn.classList.remove('bg-[#1C1B1F]', 'text-white', 'shadow-sm');
+        btn.classList.add('text-[#8E6145]', 'hover:bg-[#FAEEE8]');
+      });
+
+      document.getElementById(`panel-${tabName}`).classList.remove('hidden');
+      const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+      activeBtn.classList.remove('text-[#8E6145]', 'hover:bg-[#FAEEE8]');
+      activeBtn.classList.add('bg-[#1C1B1F]', 'text-white', 'shadow-sm');
+
+      if (tabName === 'statistik') renderStatsCards();
+    }
+
+    function updateFilterDropdown() {
+      const select = document.getElementById('filterAcaraTable');
+      const currentVal = select.value;
+      select.innerHTML = '<option value="ALL">Semua Acara</option>';
+      appConfig.daftarAcara.forEach(ev => {
+        const opt = document.createElement('option');
+        opt.value = ev.nama;
+        opt.innerText = ev.nama;
+        if (ev.nama === currentVal) opt.selected = true;
+        select.appendChild(opt);
+      });
+    }
+
+    function renderStatsCards() {
+      const container = document.getElementById('statsCardContainer');
+      container.innerHTML = '';
+
+      appConfig.daftarAcara.forEach((ev) => {
+        const listInEvent = participants.filter(p => String(p['Pilihan Acara']).trim() === String(ev.nama).trim());
+        const total = listInEvent.length;
+        const mhsCount = listInEvent.filter(p => p.Kategori === "Mahasiswa / Pelajar").length;
+        const umumCount = listInEvent.filter(p => p.Kategori === "Umum / Profesional").length;
+        const internalCount = listInEvent.filter(p => p.Kategori === "Anggota / Internal").length;
+        const verifiedCount = listInEvent.filter(p => p['Status Bayar'] === "Terverifikasi").length;
+        const pendingCount = listInEvent.filter(p => p['Status Bayar'] === "Menunggu").length;
+
+        const card = document.createElement('div');
+        card.className = "p-5 rounded-3xl bg-gradient-to-br from-[#FAEEE8] to-white border border-[#D4A394] shadow-sm flex flex-col justify-between space-y-4";
+        card.innerHTML = `
+          <div>
+            <span class="text-[10px] uppercase font-bold tracking-wider text-[#8E6145] bg-white px-2.5 py-0.5 rounded-full border border-[#D4A394]">
+              Rp ${ev.harga.toLocaleString('id-ID')},-
+            </span>
+            <h4 class="font-serif-chic font-bold text-base text-[#1C1B1F] mt-2 leading-snug">${ev.nama}</h4>
+            <div class="flex items-center justify-between mt-3 bg-white px-3 py-2 rounded-2xl border border-[#F7C1D1]/60">
+              <span class="text-xs text-[#8E6145] font-semibold">Total Peserta:</span>
+              <span class="font-bold text-base text-[#1C1B1F]">${total} <small class="text-xs font-normal">Orang</small></span>
+            </div>
+          </div>
+          <div class="pt-2 border-t border-[#F7C1D1]/50">
+            <p class="text-[10px] uppercase tracking-wider font-bold text-[#8E6145] mb-2">Rincian Kategori:</p>
+            <div class="grid grid-cols-3 gap-1.5 text-center">
+              <div class="bg-white p-2 rounded-2xl border border-[#D4A394]/40">
+                <span class="block text-[9px] text-[#8E6145] font-semibold leading-tight">Mahasiswa</span>
+                <span class="font-bold text-sm text-[#1C1B1F]">${mhsCount}</span>
+              </div>
+              <div class="bg-white p-2 rounded-2xl border border-[#BCE3EE]">
+                <span class="block text-[9px] text-blue-700 font-semibold leading-tight">Umum/Pro</span>
+                <span class="font-bold text-sm text-[#1C1B1F]">${umumCount}</span>
+              </div>
+              <div class="bg-white p-2 rounded-2xl border border-[#A3D9C9]">
+                <span class="block text-[9px] text-emerald-700 font-semibold leading-tight">Internal</span>
+                <span class="font-bold text-sm text-[#1C1B1F]">${internalCount}</span>
+              </div>
+            </div>
+            <div class="flex justify-between items-center text-[10px] text-[#8E6145] mt-3 px-1">
+              <span><i class="fa-solid fa-circle-check text-emerald-600 mr-1"></i>Lunas: <b>${verifiedCount}</b></span>
+              <span><i class="fa-solid fa-clock text-amber-600 mr-1"></i>Pending: <b>${pendingCount}</b></span>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function renderEventList() {
+      const container = document.getElementById('eventCardList');
+      container.innerHTML = '';
+      appConfig.daftarAcara.forEach((ev, index) => {
+        const card = document.createElement('div');
+        card.className = "p-4 rounded-2xl bg-[#FAEEE8] border border-[#D4A394] flex justify-between items-center";
+        card.innerHTML = `
+          <div>
+            <h4 class="font-bold text-sm text-[#1C1B1F]">${ev.nama}</h4>
+            <p class="text-xs text-[#8E6145] font-semibold mt-0.5">Rp ${ev.harga.toLocaleString('id-ID')},-</p>
+          </div>
+          <button onclick="deleteEvent(${index})" class="w-8 h-8 rounded-full bg-rose-100 text-rose-600 hover:bg-rose-200 flex items-center justify-center text-xs" title="Hapus">
+            <i class="fa-solid fa-trash"></i>
+          </button>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function openAddEventModal() { document.getElementById('modalEvent').classList.remove('hidden'); }
+    function closeAddEventModal() { document.getElementById('modalEvent').classList.add('hidden'); }
+
+    function handleSaveEvent(e) {
+      e.preventDefault();
+      const nama = document.getElementById('evNama').value.trim();
+      const harga = Number(document.getElementById('evHarga').value);
+      appConfig.daftarAcara.push({ id: "EVT-" + Date.now().toString().slice(-4), nama: nama, harga: harga });
+      saveConfig();
+      closeAddEventModal();
+      document.getElementById('evNama').value = '';
+      document.getElementById('evHarga').value = '';
+    }
+
+    function deleteEvent(index) {
+      if (confirm(`Hapus acara "${appConfig.daftarAcara[index].nama}"?`)) {
+        appConfig.daftarAcara.splice(index, 1);
+        saveConfig();
+      }
+    }
+
+    async function fetchSheetData() {
+      const tbody = document.getElementById('participantTableBody');
+      tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-[#8E6145]"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sinkronisasi Google Sheets...</td></tr>`;
+      try {
+        const response = await fetch(SCRIPT_URL);
+        const
