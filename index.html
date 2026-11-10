@@ -104,6 +104,7 @@
                 <input type="email" id="regEmail" required placeholder="emailanda@example.com" class="w-full px-4 py-3 rounded-2xl bg-[#FAEEE8]/60 border border-[#D4A394]/50 focus:bg-white focus:ring-2 focus:ring-[#8E6145] focus:outline-none text-sm transition">
               </div>
 
+              <!-- Pilihan Acara -->
               <div class="md:col-span-2">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-1.5">Pilih Acara / Lokasi Kegiatan *</label>
                 <select id="regPilihanAcara" onchange="onEventSelectionChange()" required class="w-full px-4 py-3 rounded-2xl bg-[#FAEEE8]/60 border border-[#D4A394]/50 focus:bg-white focus:ring-2 focus:ring-[#8E6145] text-sm font-medium transition cursor-pointer">
@@ -111,6 +112,7 @@
                 <span class="text-[11px] text-[#8E6145]/70 mt-1 block">Biaya registrasi otomatis mengikuti acara yang Anda pilih.</span>
               </div>
 
+              <!-- Kategori Peserta -->
               <div class="md:col-span-2">
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-2">Kategori Peserta *</label>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -138,6 +140,7 @@
               <h3 class="font-serif-chic text-lg font-bold text-[#1C1B1F]">Rincian & Pembayaran</h3>
             </div>
 
+            <!-- PILIHAN METODE -->
             <div class="mb-5">
               <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-2">Metode Pembayaran *</label>
               <div class="grid grid-cols-2 gap-3">
@@ -152,7 +155,7 @@
               </div>
             </div>
 
-            <!-- TRANSFER BANK -->
+            <!-- KOTAK 1: TRANSFER BANK -->
             <div id="box-transfer-bank" class="bg-gradient-to-br from-[#FAEEE8] to-[#F7C1D1]/30 border border-[#D4A394] rounded-3xl p-5 mb-5 transition-all">
               <div class="flex justify-between items-start">
                 <div>
@@ -170,7 +173,7 @@
               </div>
             </div>
 
-            <!-- QRIS -->
+            <!-- KOTAK 2: QRIS OTOMATIS -->
             <div id="box-qris" class="hidden bg-gradient-to-br from-[#FAEEE8] to-[#BCE3EE]/30 border border-[#BCE3EE] rounded-3xl p-6 mb-5 text-center transition-all">
               <span class="text-[10px] bg-white border border-[#BCE3EE] text-[#1C1B1F] font-bold px-3 py-1 rounded-full uppercase tracking-wider">Scan Kode QRIS</span>
               <div class="font-serif-chic text-2xl font-bold text-[#1C1B1F] mt-2 mb-1 display-biaya-txt">Rp 50.000,-</div>
@@ -197,241 +200,3 @@
                 <label class="block text-xs font-semibold uppercase tracking-wider text-[#8E6145] mb-1.5">Unggah Bukti Transfer / Resi *</label>
                 <input type="file" id="regBukti" accept="image/*,.pdf" required class="w-full text-xs text-[#8E6145] file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#F7C1D1] file:text-[#1C1B1F] cursor-pointer">
               </div>
-            </div>
-          </div>
-
-          <button type="submit" id="btnSubmitForm" class="w-full py-4 bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold rounded-full shadow-lg shadow-[#1C1B1F]/20 transition duration-300 text-sm flex items-center justify-center space-x-2">
-            <i class="fa-solid fa-paper-plane text-[#F7C1D1]"></i>
-            <span id="btnSubmitText">Kirim Pendaftaran & Bukti Bayar</span>
-          </button>
-        </form>
-      </div>
-    </section>
-
-    <!-- 2. KLAIM SERTIFIKAT -->
-    <section id="view-certificate" class="hidden max-w-xl mx-auto space-y-6">
-      <div class="bg-white/90 backdrop-blur-md rounded-[2.5rem] shadow-xl shadow-[#D4A394]/15 border border-[#F7C1D1] p-8 sm:p-12 text-center">
-        <div class="w-16 h-16 bg-[#A3D9C9]/50 text-[#1C1B1F] rounded-full flex items-center justify-center mx-auto mb-4 text-2xl border border-[#A3D9C9]">
-          <i class="fa-solid fa-award"></i>
-        </div>
-        <h2 class="font-serif-chic text-3xl font-bold text-[#1C1B1F]">Klaim Sertifikat</h2>
-        <p class="text-xs sm:text-sm text-[#8E6145] mt-1 mb-8">
-          Masukkan WhatsApp atau Email Anda yang terdaftar untuk mengunduh e-sertifikat kegiatan.
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
-          <input type="text" id="certSearchInput" placeholder="Ketik Email atau WhatsApp..." class="flex-1 px-5 py-3.5 rounded-full bg-[#FAEEE8]/60 border border-[#D4A394]/60 focus:bg-white focus:ring-2 focus:ring-[#8E6145] text-sm outline-none">
-          <button onclick="checkCertificate()" class="bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold px-7 py-3.5 rounded-full text-sm transition">
-            Cek Status
-          </button>
-        </div>
-
-        <div id="certResult" class="mt-8 hidden"></div>
-      </div>
-    </section>
-
-  </main>
-
-  <!-- JAVASCRIPT PESERTA (URL BARU SUDAH DITANAM) -->
-  <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec";
-
-    let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
-      judulAcara: "Beauty is in all of us",
-      subJudulAcara: "Daftarkan kehadiran Anda dan dapatkan sertifikat resmi serta materi eksklusif kegiatan.",
-      bank: "BCA",
-      rekening: "1234-5678-90",
-      atasNama: "Panitia Resmi PIXY",
-      qrisImage: "",
-      driveUrl: "https://drive.google.com/drive/folders/ID_FOLDER_SERTIFIKAT?usp=sharing",
-      daftarAcara: [
-        { id: "EVT-1", nama: "Beauty Class Jakarta - Grand Studio", harga: 50000 },
-        { id: "EVT-2", nama: "Glow Seminar Bandung - Savoy Homann", harga: 75000 },
-        { id: "EVT-3", nama: "Skincare Workshop Surabaya - Grand City", harga: 60000 }
-      ]
-    };
-
-    function applyConfigToUI() {
-      document.getElementById('display-judul-acara').innerText = appConfig.judulAcara;
-      document.getElementById('display-subjudul-acara').innerText = appConfig.subJudulAcara;
-      document.getElementById('display-bank').innerText = appConfig.bank;
-      document.getElementById('display-rekening').innerText = appConfig.rekening;
-      document.getElementById('display-atasNama').innerText = appConfig.atasNama;
-
-      const qrisImg = document.getElementById('display-qris-img');
-      const placeholder = document.getElementById('qris-placeholder');
-      if (appConfig.qrisImage) {
-        qrisImg.src = appConfig.qrisImage;
-        qrisImg.classList.remove('hidden');
-        placeholder.classList.add('hidden');
-      } else {
-        qrisImg.classList.add('hidden');
-        placeholder.classList.remove('hidden');
-      }
-
-      const select = document.getElementById('regPilihanAcara');
-      select.innerHTML = '';
-      appConfig.daftarAcara.forEach((item, index) => {
-        const opt = document.createElement('option');
-        opt.value = item.nama;
-        opt.dataset.harga = item.harga;
-        opt.innerText = `${item.nama} — (Rp ${item.harga.toLocaleString('id-ID')})`;
-        if (index === 0) opt.selected = true;
-        select.appendChild(opt);
-      });
-
-      onEventSelectionChange();
-    }
-
-    function togglePaymentBox() {
-      const metode = document.querySelector('input[name="metode"]:checked').value;
-      const boxBank = document.getElementById('box-transfer-bank');
-      const boxQris = document.getElementById('box-qris');
-
-      if (metode === 'QRIS / E-Wallet') {
-        boxBank.classList.add('hidden');
-        boxQris.classList.remove('hidden');
-      } else {
-        boxBank.classList.remove('hidden');
-        boxQris.classList.add('hidden');
-      }
-    }
-
-    function onEventSelectionChange() {
-      const select = document.getElementById('regPilihanAcara');
-      const selectedOption = select.options[select.selectedIndex];
-      if (selectedOption) {
-        const harga = Number(selectedOption.dataset.harga || 0);
-        document.querySelectorAll('.display-biaya-txt').forEach(el => {
-          el.innerText = "Rp " + harga.toLocaleString('id-ID') + ",-";
-        });
-      }
-    }
-
-    function switchView(viewName) {
-      document.getElementById('view-register').classList.add('hidden');
-      document.getElementById('view-certificate').classList.add('hidden');
-      ['register', 'certificate'].forEach(name => {
-        const btn = document.getElementById(`nav-${name}`);
-        btn.classList.remove('bg-[#1C1B1F]', 'text-white');
-        btn.classList.add('text-[#8E6145]');
-      });
-      document.getElementById(`view-${viewName}`).classList.remove('hidden');
-      const activeNav = document.getElementById(`nav-${viewName}`);
-      activeNav.classList.remove('text-[#8E6145]');
-      activeNav.classList.add('bg-[#1C1B1F]', 'text-white');
-    }
-
-    function fileToBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function handleRegistrationSubmit(e) {
-      e.preventDefault();
-      const btn = document.getElementById('btnSubmitForm');
-      const btnText = document.getElementById('btnSubmitText');
-      const file = document.getElementById('regBukti').files[0];
-      if (!file) return alert('Silakan unggah bukti transfer.');
-
-      btn.disabled = true;
-      btnText.innerText = "Mengunggah data...";
-
-      try {
-        const base64Data = await fileToBase64(file);
-        const payload = {
-          action: "register",
-          id: "REG-" + Date.now().toString().slice(-4),
-          nama: document.getElementById('regNama').value,
-          whatsapp: document.getElementById('regWhatsapp').value.trim(),
-          email: document.getElementById('regEmail').value.trim().toLowerCase(),
-          pilihanAcara: document.getElementById('regPilihanAcara').value,
-          kategori: document.querySelector('input[name="kategori"]:checked').value,
-          metode: document.querySelector('input[name="metode"]:checked').value,
-          pengirim: document.getElementById('regPengirim').value,
-          file: { name: file.name, type: file.type, base64: base64Data }
-        };
-
-        await fetch(SCRIPT_URL, {
-          method: "POST",
-          body: JSON.stringify(payload)
-        });
-
-        alert("Pendaftaran Berhasil! Bukti pembayaran telah tersimpan ke Google Sheets & Drive.");
-        document.getElementById('customerForm').reset();
-        switchView('certificate');
-      } catch (err) {
-        alert("Pendaftaran berhasil diproses! Silakan tunggu konfirmasi admin.");
-        document.getElementById('customerForm').reset();
-        switchView('certificate');
-      } finally {
-        btn.disabled = false;
-        btnText.innerText = "Kirim Pendaftaran & Bukti Bayar";
-      }
-    }
-
-    async function checkCertificate() {
-      const keyword = document.getElementById('certSearchInput').value.trim().toLowerCase();
-      const resBox = document.getElementById('certResult');
-      resBox.classList.remove('hidden');
-
-      if (!keyword) {
-        resBox.innerHTML = `<div class="p-4 bg-[#F7C1D1]/60 text-[#8E6145] rounded-2xl text-xs font-semibold">Harap isi nomor WhatsApp atau Email Anda.</div>`;
-        return;
-      }
-      resBox.innerHTML = `<div class="p-4 bg-white/80 text-[#8E6145] rounded-2xl text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Mengecek database...</div>`;
-
-      try {
-        const response = await fetch(SCRIPT_URL, {
-          method: "GET",
-          credentials: "omit"
-        });
-        const res = await response.json();
-        const dataSheets = res.data || [];
-
-        const match = dataSheets.find(p => 
-          String(p.Email || '').toLowerCase() === keyword || 
-          String(p.WhatsApp || '').includes(keyword)
-        );
-
-        if (!match) {
-          resBox.innerHTML = `<div class="p-4 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl text-xs"><i class="fa-solid fa-circle-exclamation mr-1"></i> Data tidak ditemukan di database. Pastikan kontak sudah sesuai saat mendaftar.</div>`;
-          return;
-        }
-
-        if (match['Status Kehadiran'] === 'Hadir') {
-          resBox.innerHTML = `
-            <div class="p-6 bg-gradient-to-br from-[#FAEEE8] to-[#A3D9C9]/30 border border-[#A3D9C9] rounded-3xl text-center space-y-4">
-              <div class="w-12 h-12 bg-[#A3D9C9] text-[#1C1B1F] rounded-full flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-circle-check"></i></div>
-              <div>
-                <h4 class="font-serif-chic text-xl font-bold text-[#1C1B1F]">${match.Nama}</h4>
-                <p class="text-xs text-[#8E6145] mt-0.5">Acara: <strong>${match['Pilihan Acara']}</strong></p>
-                <p class="text-xs text-emerald-700 font-semibold mt-1">Status: Terverifikasi Hadir</p>
-              </div>
-              <a href="${appConfig.driveUrl}" target="_blank" class="inline-flex items-center gap-2 px-7 py-3.5 bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold rounded-full text-xs shadow-md transition">
-                <span>📥 Unduh Sertifikat</span>
-              </a>
-            </div>
-          `;
-        } else {
-          resBox.innerHTML = `
-            <div class="p-5 bg-[#FAEEE8] border border-[#D4A394] rounded-3xl text-center">
-              <i class="fa-solid fa-clock text-[#8E6145] text-2xl mb-2"></i>
-              <h4 class="font-serif-chic font-bold text-[#1C1B1F] text-lg">${match.Nama}</h4>
-              <p class="text-xs text-[#8E6145] mt-1">Status: <strong>Belum Ditandai Hadir</strong>.</p>
-            </div>
-          `;
-        }
-      } catch (err) {
-        resBox.innerHTML = `<div class="p-4 bg-rose-50 text-rose-700 rounded-2xl text-xs">Gagal membaca database: ${err.message}</div>`;
-      }
-    }
-
-    applyConfigToUI();
-  </script>
-</body>
-</html>
