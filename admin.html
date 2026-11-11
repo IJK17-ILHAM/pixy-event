@@ -54,8 +54,8 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-[10px] sm:text-xs bg-[#A3D9C9] text-[#1C1B1F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Akses Admin</span>
-          <span id="liveBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Aktif
+          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Aktif (5s)
           </span>
         </div>
         <h1 class="font-serif-chic text-xl sm:text-3xl font-bold mt-2">Dasbor Pengelola Acara</h1>
@@ -95,7 +95,7 @@
       </div>
     </div>
 
-    <!-- TAB MENU NAVIGASI (RESPONSIF MOBILE) -->
+    <!-- TAB MENU NAVIGASI RESPONSIF -->
     <div class="grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-1.5 p-1 bg-white rounded-2xl sm:rounded-full border border-[#F7C1D1] shadow-sm text-center">
       <button onclick="switchAdminTab('peserta')" id="tab-btn-peserta" class="px-2 sm:px-5 py-2.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold transition bg-[#1C1B1F] text-white shadow-sm flex flex-col sm:flex-row items-center justify-center gap-1">
         <i class="fa-solid fa-users"></i>
@@ -125,12 +125,12 @@
           </div>
         </div>
 
-        <!-- TAMPILAN MOBILE KHUSUS HP (CARD VIEW) -->
+        <!-- TAMPILAN HP: CARD VIEW -->
         <div id="mobileParticipantList" class="block md:hidden divide-y divide-[#F7C1D1]/50 p-2 space-y-2">
           <div class="text-center py-8 text-[#8E6145] text-xs">Memuat data dari Google Sheets...</div>
         </div>
 
-        <!-- TAMPILAN DESKTOP (TABLE VIEW) -->
+        <!-- TAMPILAN LAPTOP: TABLE VIEW -->
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-sm text-[#1C1B1F]">
             <thead class="bg-[#FAEEE8] text-[#8E6145] text-xs uppercase font-bold">
@@ -315,12 +315,12 @@
   </div>
 
   <script>
+    // URL Web App Google Apps Script Anda
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec";
 
     let participants = [];
     let uploadedQrisBase64 = "";
     let isEditSubmitting = false;
-    let isFetching = false;
     let autoRefreshTimer = null;
 
     let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
@@ -355,10 +355,10 @@
         renderStatsCards();
         updateFilterDropdown();
         
-        // Ambil data pertama
+        // Tarik data pertama kali
         fetchSheetData(false);
 
-        // Auto Refresh tiap 5 Detik secara Real-time
+        // Polling Real-time Otomatis tiap 5 detik
         if (autoRefreshTimer) clearInterval(autoRefreshTimer);
         autoRefreshTimer = setInterval(() => {
           fetchSheetData(true);
@@ -524,64 +524,57 @@
       }
     }
 
-    // PENGAMBIL DATA MULTI-JALUR ANTI-BLOKIR BROWSER HP
-    async function fetchSheetData(silent = false) {
-      if (isFetching) return;
-      isFetching = true;
-
+    // FUNGSI PENGAMBIL DATA MULTI-PERANGKAT (KEBAL BLOKIR HP & LAPTOP)
+    function fetchSheetData(silent = false) {
       const tbody = document.getElementById('participantTableBody');
       const mobileList = document.getElementById('mobileParticipantList');
 
       if (!silent && participants.length === 0) {
         const loadingHtml = `<div class="text-center py-8 text-[#8E6145] text-xs"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sinkronisasi Google Sheets...</div>`;
-        tbody.innerHTML = `<tr><td colspan="8">${loadingHtml}</td></tr>`;
-        mobileList.innerHTML = loadingHtml;
+        if (tbody) tbody.innerHTML = `<tr><td colspan="8">${loadingHtml}</td></tr>`;
+        if (mobileList) mobileList.innerHTML = loadingHtml;
       }
 
-      const timestamp = new Date().getTime();
-      const directUrl = `${SCRIPT_URL}?_nocache=${timestamp}`;
+      // Hapus script lama jika ada
+      const existingScript = document.getElementById('gas-jsonp-script');
+      if (existingScript) existingScript.remove();
 
-      // JALUR 1: Coba ambil langsung dari Google
-      try {
-        const res = await fetch(directUrl, {
-          method: 'GET',
-          cache: 'no-store',
-          redirect: 'follow'
-        });
-        if (!res.ok) throw new Error("HTTP error " + res.status);
-        const data = await res.json();
-        handleDataSuccess(data);
-        isFetching = false;
-        return;
-      } catch (directErr) {
-        // Jika gagal karena Safari/Android memblokir, lanjutkan ke Jalur 2
-      }
-
-      // JALUR 2: Gunakan Proxy Resmi Allorigins (Anti-Blokir Safari iPhone & Android)
-      try {
-        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
-        const pRes = await fetch(proxyUrl, { cache: 'no-store' });
-        if (!pRes.ok) throw new Error("Proxy error");
-        const pData = await pRes.json();
-        handleDataSuccess(pData);
-      } catch (proxyErr) {
-        if (!silent && participants.length === 0) {
-          const errMsg = `<div class="p-4 text-center text-rose-600 font-semibold text-xs leading-relaxed">
-            Gagal menghubungkan ke data Google Sheets.<br>Periksa jaringan internet Anda atau buka ulang browser.
-          </div>`;
-          document.getElementById('participantTableBody').innerHTML = `<tr><td colspan="8">${errMsg}</td></tr>`;
-          document.getElementById('mobileParticipantList').innerHTML = errMsg;
+      // Callback Global Penerima Data
+      window.handleSheetResponse = function(data) {
+        if (data && data.status === "error") {
+          tampilkanError(data.message);
+          return;
         }
-      } finally {
-        isFetching = false;
-      }
+
+        participants = Array.isArray(data) ? data : [];
+        updateKPICounters();
+        renderAdminView();
+        renderStatsCards();
+      };
+
+      // Buat pemanggilan dinamis via tag script (Bebas kendala CORS / Safari iOS / Android)
+      const script = document.createElement('script');
+      script.id = 'gas-jsonp-script';
+      script.src = `${SCRIPT_URL}?callback=handleSheetResponse&_t=${new Date().getTime()}`;
+      
+      script.onerror = function() {
+        if (!silent && participants.length === 0) {
+          tampilkanError("Gagal memuat data dari Apps Script.");
+        }
+      };
+
+      document.body.appendChild(script);
     }
 
-    function handleDataSuccess(data) {
-      participants = Array.isArray(data) ? data : [];
-      updateKPICounters();
-      renderAdminView();
-      renderStatsCards();
+    function tampilkanError(msg) {
+      const errMsg = `<div class="p-4 text-center text-rose-600 font-semibold text-xs leading-relaxed">
+        ${msg || 'Gagal menghubungkan ke data Google Sheets.'}<br>
+        Pastikan hak akses Apps Script sudah disetel <b>"Who has access: Anyone"</b>.
+      </div>`;
+      const tbody = document.getElementById('participantTableBody');
+      const mobileList = document.getElementById('mobileParticipantList');
+      if (tbody) tbody.innerHTML = `<tr><td colspan="8">${errMsg}</td></tr>`;
+      if (mobileList) mobileList.innerHTML = errMsg;
     }
 
     function updateKPICounters() {
@@ -608,7 +601,7 @@
         return;
       }
 
-      // Render Mobile Card List
+      // Render Mobile Cards (Khusus HP)
       mobileList.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
@@ -662,7 +655,7 @@
         `;
       }).join('');
 
-      // Render Desktop Table View
+      // Render Desktop Table (Khusus Laptop/Tablet)
       tbody.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
