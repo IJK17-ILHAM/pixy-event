@@ -69,8 +69,8 @@
         <button onclick="openSettingsModal()" class="flex-1 md:flex-none justify-center px-3.5 py-2.5 bg-[#D4A394] hover:bg-[#8E6145] text-[#1C1B1F] hover:text-white rounded-xl sm:rounded-full text-xs font-semibold transition flex items-center gap-1.5">
           <i class="fa-solid fa-qrcode text-xs"></i> <span>QRIS & Bank</span>
         </button>
-        <button onclick="logoutAdmin()" class="px-3.5 py-2.5 bg-rose-600/90 hover:bg-rose-700 text-white rounded-xl sm:rounded-full text-xs font-semibold transition flex items-center gap-1.5">
-          <i class="fa-solid fa-right-from-bracket text-xs"></i>
+        <button onclick="logoutAdmin()" class="px-3.5 py-2.5 bg-rose-600/90 hover:bg-rose-700 text-white rounded-xl sm:rounded-full text-xs font-semibold transition flex items-center gap-1.5" title="Keluar / Logout">
+          <i class="fa-solid fa-right-from-bracket text-xs"></i> <span class="text-xs font-semibold">Keluar</span>
         </button>
       </div>
     </div>
@@ -154,7 +154,7 @@
       </div>
     </section>
 
-    <!-- PANEL 2: STATISTIK -->
+    <!-- PANEL 2: STATISTIK KATEGORI ACARA -->
     <section id="panel-statistik" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex justify-between items-center border-b border-[#F7C1D1]/60 pb-3">
@@ -170,7 +170,7 @@
       </div>
     </section>
 
-    <!-- PANEL 3: KELOLA ACARA -->
+    <!-- PANEL 3: KELOLA ACARA & LINK SERTIFIKAT -->
     <section id="panel-acara" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#F7C1D1]/60 pb-3">
@@ -343,35 +343,58 @@
       updateFilterDropdown();
     }
 
+    // CEK OTOMATIS APAKAH ADMIN SUDAH LOGIN SEBELUMNYA
+    window.addEventListener('DOMContentLoaded', () => {
+      const isLogged = localStorage.getItem('pixy_admin_logged');
+      if (isLogged === 'true') {
+        bukaDasborTanpaLogin();
+      }
+    });
+
+    function bukaDasborTanpaLogin() {
+      document.getElementById('loginScreen').classList.add('hidden');
+      document.getElementById('adminDashboard').classList.remove('hidden');
+      renderEventList();
+      renderStatsCards();
+      updateFilterDropdown();
+      
+      // Ambil data pertama kali
+      fetchSheetData(false);
+
+      // Jalankan polling 5 detik
+      if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+      autoRefreshTimer = setInterval(() => {
+        fetchSheetData(true);
+      }, 5000);
+    }
+
     function handleAdminLogin(e) {
       e.preventDefault();
       const u = document.getElementById('adminUser').value;
       const p = document.getElementById('adminPass').value;
       if (u === 'admin' && p === 'admin') {
-        document.getElementById('loginScreen').classList.add('hidden');
-        document.getElementById('adminDashboard').classList.remove('hidden');
-        renderEventList();
-        renderStatsCards();
-        updateFilterDropdown();
-        
-        fetchSheetData(false);
-
-        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-        autoRefreshTimer = setInterval(() => {
-          fetchSheetData(true);
-        }, 5000);
+        // SIMPAN SESI LOGIN KE LOCALSTORAGE
+        localStorage.setItem('pixy_admin_logged', 'true');
+        bukaDasborTanpaLogin();
       } else {
         alert('Username atau Password Admin salah!');
       }
     }
 
     function logoutAdmin() {
-      if (autoRefreshTimer) {
-        clearInterval(autoRefreshTimer);
-        autoRefreshTimer = null;
+      if (confirm("Apakah Anda yakin ingin keluar dari dasbor?")) {
+        // HAPUS SESI LOGIN
+        localStorage.removeItem('pixy_admin_logged');
+
+        if (autoRefreshTimer) {
+          clearInterval(autoRefreshTimer);
+          autoRefreshTimer = null;
+        }
+        document.getElementById('adminDashboard').classList.add('hidden');
+        document.getElementById('loginScreen').classList.remove('hidden');
+        document.getElementById('adminUser').value = '';
+        document.getElementById('adminPass').value = '';
       }
-      document.getElementById('adminDashboard').classList.add('hidden');
-      document.getElementById('loginScreen').classList.remove('hidden');
     }
 
     function switchAdminTab(tabName) {
@@ -601,6 +624,7 @@
         return;
       }
 
+      // Render Mobile Cards (Khusus HP)
       mobileList.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
@@ -654,6 +678,7 @@
         `;
       }).join('');
 
+      // Render Desktop Table (Khusus Laptop/Tablet)
       tbody.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
