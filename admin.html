@@ -125,12 +125,12 @@
           </div>
         </div>
 
-        <!-- TAMPILAN KHUSUS HP (CARD VIEW) -->
+        <!-- TAMPILAN HP: CARD VIEW -->
         <div id="mobileParticipantList" class="block md:hidden divide-y divide-[#F7C1D1]/50 p-2 space-y-2">
           <div class="text-center py-8 text-[#8E6145] text-xs">Memuat data dari Google Sheets...</div>
         </div>
 
-        <!-- TAMPILAN KHUSUS LAPTOP (TABLE VIEW) -->
+        <!-- TAMPILAN LAPTOP: TABLE VIEW -->
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-sm text-[#1C1B1F]">
             <thead class="bg-[#FAEEE8] text-[#8E6145] text-xs uppercase font-bold">
@@ -154,7 +154,7 @@
       </div>
     </section>
 
-    <!-- PANEL 2: STATISTIK KATEGORI ACARA -->
+    <!-- PANEL 2: STATISTIK -->
     <section id="panel-statistik" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex justify-between items-center border-b border-[#F7C1D1]/60 pb-3">
@@ -170,7 +170,7 @@
       </div>
     </section>
 
-    <!-- PANEL 3: KELOLA ACARA & LINK SERTIFIKAT -->
+    <!-- PANEL 3: KELOLA ACARA -->
     <section id="panel-acara" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#F7C1D1]/60 pb-3">
@@ -315,7 +315,6 @@
   </div>
 
   <script>
-    // URL Web App Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec";
 
     let participants = [];
@@ -355,10 +354,8 @@
         renderStatsCards();
         updateFilterDropdown();
         
-        // Panggil pertama kali
         fetchSheetData(false);
 
-        // Auto Refresh tiap 5 detik secara Real-Time
         if (autoRefreshTimer) clearInterval(autoRefreshTimer);
         autoRefreshTimer = setInterval(() => {
           fetchSheetData(true);
@@ -535,10 +532,8 @@
         if (mobileList) mobileList.innerHTML = loadingHtml;
       }
 
-      // 1. Buat nama fungsi acak unik agar HP tidak memakai cache lama
       const uniqueCallback = "gas_cb_" + Math.floor(Math.random() * 10000000);
 
-      // 2. Daftarkan fungsi penerima ke window browser HP
       window[uniqueCallback] = function(data) {
         try {
           if (data && data.status === "error") {
@@ -556,7 +551,6 @@
         }
       };
 
-      // 3. Masukkan script ke Head Browser HP
       const script = document.createElement('script');
       script.id = uniqueCallback;
       script.src = `${SCRIPT_URL}?callback=${uniqueCallback}&_t=${Date.now()}`;
@@ -607,7 +601,6 @@
         return;
       }
 
-      // Render Mobile Card (Khusus Layar HP)
       mobileList.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
@@ -661,7 +654,6 @@
         `;
       }).join('');
 
-      // Render Desktop Table (Khusus Layar Laptop)
       tbody.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
