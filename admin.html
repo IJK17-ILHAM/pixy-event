@@ -16,7 +16,6 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
 
-  <!-- HIDDEN IFRAME TARGET UNTUK BYPASS CORS EDIT ADMIN -->
   <iframe name="admin_hidden_iframe" id="admin_hidden_iframe" style="display:none;" onload="onAdminIframeLoaded()"></iframe>
 
   <!-- GERBANG LOGIN -->
@@ -171,6 +170,25 @@
       </div>
     </section>
 
+  </div>
+
+  <!-- MODAL: PRATINJAU BUKTI PEMBAYARAN LANGSUNG -->
+  <div id="modalBukti" class="fixed inset-0 bg-[#1C1B1F]/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden border border-[#F7C1D1] p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h4 class="font-serif-chic font-bold text-[#1C1B1F] text-lg">Bukti Pembayaran</h4>
+        <button onclick="closeBuktiModal()" class="text-gray-400 hover:text-black text-xl"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="bg-gray-50 rounded-2xl p-2 border flex items-center justify-center min-h-[250px] max-h-[65vh] overflow-hidden">
+        <img id="imgBuktiPreview" src="" alt="Bukti Transfer" class="max-h-[60vh] max-w-full object-contain rounded-xl shadow-sm">
+      </div>
+      <div class="flex justify-between items-center pt-2">
+        <a id="linkBuktiDrive" href="#" target="_blank" class="text-xs font-semibold text-blue-600 hover:underline flex items-center gap-1">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Buka Asli di Drive
+        </a>
+        <button onclick="closeBuktiModal()" class="px-5 py-2 bg-[#1C1B1F] text-white rounded-full text-xs font-semibold">Tutup</button>
+      </div>
+    </div>
   </div>
 
   <!-- MODAL: TAMBAH ACARA -->
@@ -475,7 +493,6 @@
       }
     }
 
-    // FUNGSI LOAD DATA ANTI-FAILED TO FETCH (JSONP)
     function fetchSheetData() {
       const tbody = document.getElementById('participantTableBody');
       tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-[#8E6145]"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sinkronisasi Google Sheets...</td></tr>`;
@@ -531,7 +548,6 @@
         const statusBayar = p['Status Bayar'] || 'Menunggu';
         const kehadiran = p['Kehadiran'] || 'Belum Hadir';
 
-        // Pastikan hanya membuka link resmi yang berawalan http/https
         const isUrlValid = bukti.startsWith('http');
 
         return `
@@ -547,7 +563,7 @@
             <td class="px-6 py-4 text-xs font-semibold">${acara}</td>
             <td class="px-6 py-4">
               ${isUrlValid 
-                ? `<a href="${bukti}" target="_blank" rel="noopener noreferrer" class="px-3 py-1 bg-[#FAEEE8] border border-[#D4A394] rounded-full text-xs font-semibold text-[#8E6145] hover:bg-[#D4A394] hover:text-white inline-flex items-center gap-1.5 shadow-sm"><i class="fa-solid fa-arrow-up-right-from-square"></i> Lihat</a>` 
+                ? `<button onclick="openBuktiModal('${bukti}')" class="px-3 py-1 bg-[#FAEEE8] border border-[#D4A394] rounded-full text-xs font-semibold text-[#8E6145] hover:bg-[#D4A394] hover:text-white inline-flex items-center gap-1.5 shadow-sm transition"><i class="fa-solid fa-eye"></i> Lihat Bukti</button>` 
                 : `<span class="text-xs text-gray-400 italic">Tidak ada</span>`
               }
             </td>
@@ -565,6 +581,18 @@
           </tr>
         `;
       }).join('');
+    }
+
+    // FUNGSI POPUP PREVIEW BUKTI TRANSFER
+    function openBuktiModal(url) {
+      document.getElementById('imgBuktiPreview').src = url;
+      document.getElementById('linkBuktiDrive').href = url;
+      document.getElementById('modalBukti').classList.remove('hidden');
+    }
+
+    function closeBuktiModal() {
+      document.getElementById('modalBukti').classList.add('hidden');
+      document.getElementById('imgBuktiPreview').src = '';
     }
 
     function openEditModal(index) {
