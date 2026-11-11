@@ -36,12 +36,10 @@
       </div>
     </div>
 
-    <!-- SECTION 1: FORM PENDAFTARAN (FORM LANGSUNG KE APPS SCRIPT) -->
+    <!-- SECTION 1: FORM PENDAFTARAN -->
     <div id="section-daftar" class="bg-white rounded-[2rem] p-6 sm:p-8 border border-[#F7C1D1] shadow-md space-y-6">
-      
       <form id="mainRegForm" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)" action="https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec" class="space-y-4">
         
-        <!-- HIDDEN INPUT UNTUK APPS SCRIPT -->
         <input type="hidden" name="action" value="register">
         <input type="hidden" name="fileData" id="postFileData">
         <input type="hidden" name="fileName" id="postFileName">
@@ -194,7 +192,6 @@
       }
     }
 
-    // PROSES SUBMIT TANPA BLOKIR CORS (IFRAME METHOD)
     function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitDaftar');
@@ -218,14 +215,13 @@
         document.getElementById('postFileType').value = file.type;
 
         isSubmitted = true;
-        // Submit langsung via form native HTML (Kebal CORS)
+        // Submit langsung via native HTML form ke hidden iframe (Anti-CORS)
         document.getElementById('mainRegForm').submit();
       };
 
       reader.readAsDataURL(file);
     }
 
-    // IFRAME CALLBACK KETIKA GOOGLE SELESAI MENERIMA DATA
     function onIframeLoaded() {
       if (isSubmitted) {
         isSubmitted = false;
@@ -237,7 +233,6 @@
       }
     }
 
-    // CEK TIKET BEBAS CORS DENGAN JSONP
     function cariPeserta() {
       const wa = document.getElementById('cekWhatsapp').value.trim();
       const resContainer = document.getElementById('statusResult');
