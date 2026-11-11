@@ -16,7 +16,7 @@
 </head>
 <body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
 
-  <!-- HIDDEN IFRAME TARGET UNTUK BYPASS CORS -->
+  <!-- HIDDEN IFRAME TARGET -->
   <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="onIframeLoaded()"></iframe>
 
   <div class="max-w-2xl mx-auto space-y-8">
@@ -90,7 +90,6 @@
             <p>a.n <span id="infoAtasNama">Panitia Resmi PIXY</span></p>
           </div>
 
-          <!-- GAMBAR QRIS JIKA TERSEDIA -->
           <div id="qrisSection" class="hidden text-center pt-2">
             <p class="text-[11px] font-bold text-[#8E6145] mb-2 uppercase">Atau Scan QRIS di bawah ini:</p>
             <img id="imgQrisCustomer" src="" alt="QRIS Acara" class="w-48 h-48 mx-auto object-contain bg-white rounded-xl p-2 border border-[#D4A394] shadow-sm">
@@ -192,6 +191,7 @@
       }
     }
 
+    // Kompres gambar otomatis agar ringan saat dikirim
     function handleFormSubmit(e) {
       e.preventDefault();
       const btn = document.getElementById('btnSubmitDaftar');
@@ -203,20 +203,44 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Mengunggah bukti & mengirim data...";
+      btn.innerText = "Mengompres & mengirim pendaftaran...";
 
       const file = fileInput.files[0];
       const reader = new FileReader();
 
       reader.onload = function(evt) {
-        const base64Data = evt.target.result.split(',')[1];
-        document.getElementById('postFileData').value = base64Data;
-        document.getElementById('postFileName').value = file.name;
-        document.getElementById('postFileType').value = file.type;
+        const img = new Image();
+        img.onload = function() {
+          const canvas = document.createElement('canvas');
+          let width = img.width;
+          let height = img.height;
+          const maxDim = 800; // Skala maksimal gambar
 
-        isSubmitted = true;
-        // Submit langsung via native HTML form ke hidden iframe (Anti-CORS)
-        document.getElementById('mainRegForm').submit();
+          if (width > height && width > maxDim) {
+            height = Math.round((height * maxDim) / width);
+            width = maxDim;
+          } else if (height > maxDim) {
+            width = Math.round((width * maxDim) / height);
+            height = maxDim;
+          }
+
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Ambil Base64 hasil kompresi (sangat ringan <150KB)
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+          const base64Data = compressedDataUrl.split(',')[1];
+
+          document.getElementById('postFileData').value = base64Data;
+          document.getElementById('postFileName').value = file.name.replace(/\.[^/.]+$/, "") + ".jpg";
+          document.getElementById('postFileType').value = "image/jpeg";
+
+          isSubmitted = true;
+          document.getElementById('mainRegForm').submit();
+        };
+        img.src = evt.target.result;
       };
 
       reader.readAsDataURL(file);
@@ -225,7 +249,7 @@
     function onIframeLoaded() {
       if (isSubmitted) {
         isSubmitted = false;
-        alert("Selamat! Pendaftaran Anda berhasil dikirim ke sistem panitia.");
+        alert("Selamat! Pendaftaran Anda berhasil disimpan ke Google Sheets.");
         document.getElementById('mainRegForm').reset();
         document.getElementById('btnSubmitDaftar').disabled = false;
         document.getElementById('btnSubmitDaftar').innerText = "Kirim Pendaftaran";
