@@ -54,7 +54,7 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-[10px] sm:text-xs bg-[#A3D9C9] text-[#1C1B1F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Akses Admin</span>
-          <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
+          <span id="liveBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Aktif (5s)
           </span>
         </div>
@@ -125,12 +125,12 @@
           </div>
         </div>
 
-        <!-- TAMPILAN HP: CARD VIEW -->
+        <!-- TAMPILAN KHUSUS HP (CARD VIEW) -->
         <div id="mobileParticipantList" class="block md:hidden divide-y divide-[#F7C1D1]/50 p-2 space-y-2">
           <div class="text-center py-8 text-[#8E6145] text-xs">Memuat data dari Google Sheets...</div>
         </div>
 
-        <!-- TAMPILAN LAPTOP: TABLE VIEW -->
+        <!-- TAMPILAN KHUSUS LAPTOP (TABLE VIEW) -->
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-sm text-[#1C1B1F]">
             <thead class="bg-[#FAEEE8] text-[#8E6145] text-xs uppercase font-bold">
@@ -154,7 +154,7 @@
       </div>
     </section>
 
-    <!-- PANEL 2: STATISTIK -->
+    <!-- PANEL 2: STATISTIK KATEGORI ACARA -->
     <section id="panel-statistik" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex justify-between items-center border-b border-[#F7C1D1]/60 pb-3">
@@ -170,7 +170,7 @@
       </div>
     </section>
 
-    <!-- PANEL 3: KELOLA ACARA -->
+    <!-- PANEL 3: KELOLA ACARA & LINK SERTIFIKAT -->
     <section id="panel-acara" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#F7C1D1]/60 pb-3">
@@ -315,7 +315,7 @@
   </div>
 
   <script>
-    // URL Web App Google Apps Script Anda
+    // URL Web App Google Apps Script
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec";
 
     let participants = [];
@@ -355,10 +355,10 @@
         renderStatsCards();
         updateFilterDropdown();
         
-        // Tarik data pertama kali
+        // Panggil pertama kali
         fetchSheetData(false);
 
-        // Polling Real-time Otomatis tiap 5 detik
+        // Auto Refresh tiap 5 detik secara Real-Time
         if (autoRefreshTimer) clearInterval(autoRefreshTimer);
         autoRefreshTimer = setInterval(() => {
           fetchSheetData(true);
@@ -524,7 +524,7 @@
       }
     }
 
-    // FUNGSI PENGAMBIL DATA MULTI-PERANGKAT (KEBAL BLOKIR HP & LAPTOP)
+    // FUNGSI INI DIJAMIN TEMBUS BROWSER HP (SAFARI / ANDROID) & LAPTOP
     function fetchSheetData(silent = false) {
       const tbody = document.getElementById('participantTableBody');
       const mobileList = document.getElementById('mobileParticipantList');
@@ -535,35 +535,41 @@
         if (mobileList) mobileList.innerHTML = loadingHtml;
       }
 
-      // Hapus script lama jika ada
-      const existingScript = document.getElementById('gas-jsonp-script');
-      if (existingScript) existingScript.remove();
+      // 1. Buat nama fungsi acak unik agar HP tidak memakai cache lama
+      const uniqueCallback = "gas_cb_" + Math.floor(Math.random() * 10000000);
 
-      // Callback Global Penerima Data
-      window.handleSheetResponse = function(data) {
-        if (data && data.status === "error") {
-          tampilkanError(data.message);
-          return;
+      // 2. Daftarkan fungsi penerima ke window browser HP
+      window[uniqueCallback] = function(data) {
+        try {
+          if (data && data.status === "error") {
+            tampilkanError(data.message);
+            return;
+          }
+          participants = Array.isArray(data) ? data : [];
+          updateKPICounters();
+          renderAdminView();
+          renderStatsCards();
+        } finally {
+          delete window[uniqueCallback];
+          const el = document.getElementById(uniqueCallback);
+          if (el) el.remove();
         }
-
-        participants = Array.isArray(data) ? data : [];
-        updateKPICounters();
-        renderAdminView();
-        renderStatsCards();
       };
 
-      // Buat pemanggilan dinamis via tag script (Bebas kendala CORS / Safari iOS / Android)
+      // 3. Masukkan script ke Head Browser HP
       const script = document.createElement('script');
-      script.id = 'gas-jsonp-script';
-      script.src = `${SCRIPT_URL}?callback=handleSheetResponse&_t=${new Date().getTime()}`;
+      script.id = uniqueCallback;
+      script.src = `${SCRIPT_URL}?callback=${uniqueCallback}&_t=${Date.now()}`;
       
       script.onerror = function() {
+        delete window[uniqueCallback];
+        if (script.parentNode) script.remove();
         if (!silent && participants.length === 0) {
           tampilkanError("Gagal memuat data dari Apps Script.");
         }
       };
 
-      document.body.appendChild(script);
+      document.head.appendChild(script);
     }
 
     function tampilkanError(msg) {
@@ -601,7 +607,7 @@
         return;
       }
 
-      // Render Mobile Cards (Khusus HP)
+      // Render Mobile Card (Khusus Layar HP)
       mobileList.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
@@ -655,7 +661,7 @@
         `;
       }).join('');
 
-      // Render Desktop Table (Khusus Laptop/Tablet)
+      // Render Desktop Table (Khusus Layar Laptop)
       tbody.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
