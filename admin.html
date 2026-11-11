@@ -16,6 +16,9 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between p-4 sm:p-8">
 
+  <!-- HIDDEN IFRAME TARGET UNTUK BYPASS CORS EDIT ADMIN -->
+  <iframe name="admin_hidden_iframe" id="admin_hidden_iframe" style="display:none;" onload="onAdminIframeLoaded()"></iframe>
+
   <!-- GERBANG LOGIN -->
   <div id="loginScreen" class="fixed inset-0 bg-[#FAEEE8] flex items-center justify-center p-4 z-50">
     <div class="bg-white rounded-[2.5rem] shadow-xl border border-[#F7C1D1] max-w-sm w-full p-8 text-center">
@@ -250,7 +253,7 @@
     </div>
   </div>
 
-  <!-- MODAL: EDIT DATA PESERTA -->
+  <!-- MODAL: EDIT DATA PESERTA (MENGGUNAKAN FORM NATIVE KE HIDDEN IFRAME) -->
   <div id="modalEditPeserta" class="fixed inset-0 bg-[#1C1B1F]/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-[2rem] shadow-xl max-w-lg w-full overflow-hidden border border-[#F7C1D1]">
       <div class="px-6 py-4 bg-[#FAEEE8] border-b border-[#F7C1D1] flex justify-between items-center">
@@ -258,33 +261,36 @@
         <button onclick="closeEditModal()" class="text-[#8E6145]"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
 
-      <form onsubmit="saveEditedParticipant(event)" class="p-6 space-y-4">
-        <input type="hidden" id="editRowIndex">
+      <form id="editForm" method="POST" target="admin_hidden_iframe" action="https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec" onsubmit="handleEditSubmit(event)" class="p-6 space-y-4">
+        
+        <input type="hidden" name="action" value="updateStatus">
+        <input type="hidden" name="whatsapp" id="editWhatsappHidden">
+
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Lengkap</label>
-          <input type="text" id="editNama" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+          <input type="text" name="nama" id="editNama" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-xs font-semibold text-[#8E6145] mb-1">WhatsApp</label>
-            <input type="tel" id="editWhatsapp" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+            <label class="block text-xs font-semibold text-[#8E6145] mb-1">WhatsApp (Kunci Data)</label>
+            <input type="tel" id="editWhatsappDisplay" disabled class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm bg-gray-100 text-gray-500">
           </div>
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Email</label>
-            <input type="email" id="editEmail" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
+            <input type="email" name="email" id="editEmail" required class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm">
           </div>
         </div>
         <div class="grid grid-cols-2 gap-3 pt-2 border-t border-[#F7C1D1]">
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Status Verifikasi</label>
-            <select id="editStatusBayar" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
+            <select name="statusBayar" id="editStatusBayar" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
               <option value="Menunggu">Menunggu</option>
               <option value="Terverifikasi">Terverifikasi</option>
             </select>
           </div>
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Status Kehadiran</label>
-            <select id="editStatusKehadiran" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
+            <select name="kehadiran" id="editStatusKehadiran" class="w-full px-3.5 py-2 border rounded-xl border-[#D4A394] text-sm font-semibold">
               <option value="Belum Hadir">Belum Hadir</option>
               <option value="Hadir">Hadir (Sertifikat Aktif)</option>
             </select>
@@ -303,6 +309,7 @@
 
     let participants = [];
     let uploadedQrisBase64 = "";
+    let isEditSubmitting = false;
 
     let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
       judulAcara: "Beauty is in all of us",
@@ -556,53 +563,38 @@
 
     function openEditModal(index) {
       const p = participants[index];
-      document.getElementById('editRowIndex').value = index;
+      const wa = p['WhatsApp'] || '';
+      document.getElementById('editWhatsappHidden').value = wa;
+      document.getElementById('editWhatsappDisplay').value = wa;
       document.getElementById('editNama').value = p['Nama Lengkap'] || '';
-      document.getElementById('editWhatsapp').value = p['WhatsApp'] || '';
       document.getElementById('editEmail').value = p['Email'] || '';
       document.getElementById('editStatusBayar').value = p['Status Bayar'] || 'Menunggu';
       document.getElementById('editStatusKehadiran').value = p['Kehadiran'] || 'Belum Hadir';
       document.getElementById('modalEditPeserta').classList.remove('hidden');
     }
 
-    function closeEditModal() { document.getElementById('modalEditPeserta').classList.add('hidden'); }
+    function closeEditModal() { 
+      document.getElementById('modalEditPeserta').classList.add('hidden'); 
+    }
 
-    async function saveEditedParticipant(e) {
-      e.preventDefault();
-      const idx = document.getElementById('editRowIndex').value;
+    // SUBMIT EDIT VIA HIDDEN IFRAME (BEBAS BLOKIR CORS)
+    function handleEditSubmit(e) {
       const btn = document.getElementById('btnSaveEdit');
       btn.disabled = true;
       btn.innerText = "Menyimpan ke Sheets...";
+      isEditSubmitting = true;
+      // Form akan otomatis submit ke iframe tanpa memicu CORS error
+    }
 
-      const target = participants[idx];
-      const payload = {
-        action: "updateStatus",
-        whatsapp: target['WhatsApp'],
-        nama: document.getElementById('editNama').value.trim(),
-        email: document.getElementById('editEmail').value.trim(),
-        statusBayar: document.getElementById('editStatusBayar').value,
-        kehadiran: document.getElementById('editStatusKehadiran').value
-      };
-
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          redirect: "follow"
-        });
-        const r = await res.json();
-        if (r.status === 'success') {
-          closeEditModal();
-          fetchSheetData();
-        } else {
-          alert("Gagal update: " + r.message);
-        }
-      } catch (err) {
-        alert("Koneksi gagal: " + err.message);
-      } finally {
+    function onAdminIframeLoaded() {
+      if (isEditSubmitting) {
+        isEditSubmitting = false;
+        closeEditModal();
+        const btn = document.getElementById('btnSaveEdit');
         btn.disabled = false;
         btn.innerText = "Simpan ke Sheets";
+        // Refresh tabel peserta otomatis
+        setTimeout(fetchSheetData, 800);
       }
     }
 
