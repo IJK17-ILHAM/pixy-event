@@ -224,12 +224,14 @@
 
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
-          body: JSON.stringify(payload)
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          redirect: "follow"
         });
         const result = await res.json();
 
         if (result.status === "success") {
-          alert("Selamat! Pendaftaran Anda berhasil dikirim ke sistem. Mohon tunggu verifikasi dari panitia.");
+          alert("Selamat! Pendaftaran Anda berhasil dikirim ke panitia.");
           e.target.reset();
           updateEventPrice();
         } else {
@@ -255,7 +257,10 @@
       resContainer.innerHTML = '<p class="text-xs text-[#8E6145] text-center">Memeriksa database...</p>';
 
       try {
-        const res = await fetch(SCRIPT_URL);
+        const res = await fetch(SCRIPT_URL, {
+          method: "GET",
+          redirect: "follow"
+        });
         const data = await res.json();
         const found = data.filter(d => String(d['WhatsApp'] || '').replace(/\D/g,'').includes(wa.replace(/\D/g,'')));
 
