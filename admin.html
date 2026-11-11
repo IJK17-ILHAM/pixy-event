@@ -471,14 +471,23 @@
     async function fetchSheetData() {
       const tbody = document.getElementById('participantTableBody');
       tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-[#8E6145]"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Sinkronisasi Google Sheets...</td></tr>`;
+      
       try {
-        const response = await fetch(SCRIPT_URL);
+        const response = await fetch(SCRIPT_URL, {
+          method: "GET",
+          redirect: "follow"
+        });
+        
+        if (!response.ok) {
+          throw new Error("HTTP Status: " + response.status);
+        }
+
         participants = await response.json();
         updateKPICounters();
         renderAdminTable();
         renderStatsCards();
       } catch (err) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-rose-600">Gagal sinkron data: ${err.message}</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-rose-600 font-semibold">Gagal sinkron data: ${err.message}<br><small class="text-gray-500 font-normal">Pastikan opsi 'Who has access' pada Deploy Apps Script diatur ke 'Anyone'.</small></td></tr>`;
       }
     }
 
@@ -572,7 +581,9 @@
       try {
         const res = await fetch(SCRIPT_URL, {
           method: "POST",
-          body: JSON.stringify(payload)
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify(payload),
+          redirect: "follow"
         });
         const r = await res.json();
         if (r.status === 'success') {
