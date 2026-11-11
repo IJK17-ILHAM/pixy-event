@@ -245,7 +245,7 @@
       }
     }
 
-    async function cariPeserta() {
+    function cariPeserta() {
       const wa = document.getElementById('cekWhatsapp').value.trim();
       const resContainer = document.getElementById('statusResult');
       const btn = document.getElementById('btnCariPeserta');
@@ -256,13 +256,14 @@
       resContainer.classList.remove('hidden');
       resContainer.innerHTML = '<p class="text-xs text-[#8E6145] text-center">Memeriksa database...</p>';
 
-      try {
-        const res = await fetch(SCRIPT_URL, {
-          method: "GET",
-          redirect: "follow"
-        });
-        const data = await res.json();
-        const found = data.filter(d => String(d['WhatsApp'] || '').replace(/\D/g,'').includes(wa.replace(/\D/g,'')));
+      const oldScript = document.getElementById('jsonp-search');
+      if (oldScript) oldScript.remove();
+
+      window.handleCustomerSearch = function(data) {
+        btn.disabled = false;
+        btn.innerText = "Cari Tiket";
+
+        const found = (Array.isArray(data) ? data : []).filter(d => String(d['WhatsApp'] || '').replace(/\D/g,'').includes(wa.replace(/\D/g,'')));
 
         if (!found || found.length === 0) {
           resContainer.innerHTML = '<p class="text-xs text-rose-600 font-semibold text-center">Nomor WhatsApp belum terdaftar.</p>';
@@ -289,13 +290,17 @@
             </div>
           </div>
         `).join('');
+      };
 
-      } catch (err) {
-        resContainer.innerHTML = `<p class="text-xs text-rose-600 text-center">Gagal memeriksa status: ${err.message}</p>`;
-      } finally {
+      const script = document.createElement('script');
+      script.id = 'jsonp-search';
+      script.src = `${SCRIPT_URL}?callback=handleCustomerSearch&t=${Date.now()}`;
+      script.onerror = function() {
         btn.disabled = false;
         btn.innerText = "Cari Tiket";
-      }
+        resContainer.innerHTML = '<p class="text-xs text-rose-600 text-center">Gagal memeriksa status. Cek koneksi Anda.</p>';
+      };
+      document.body.appendChild(script);
     }
 
     initUI();
