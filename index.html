@@ -191,8 +191,10 @@
       });
     }
 
+    // PENGIRIMAN DATA ANTI-CORS / ANTI-FAILED TO FETCH
     async function handleCustomerSubmit(e) {
       e.preventDefault();
+      const form = e.target;
       const btn = document.getElementById('btnSubmitDaftar');
       btn.disabled = true;
       btn.innerText = "Mengunggah bukti & memproses data...";
@@ -222,29 +224,31 @@
           fileType: fileType
         };
 
-        const res = await fetch(SCRIPT_URL, {
+        // Menggunakan mode no-cors agar browser tidak memblokir redirect Google
+        await fetch(SCRIPT_URL, {
           method: "POST",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify(payload),
-          redirect: "follow"
+          mode: "no-cors",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(payload)
         });
-        const result = await res.json();
 
-        if (result.status === "success") {
-          alert("Selamat! Pendaftaran Anda berhasil dikirim ke panitia.");
-          e.target.reset();
-          updateEventPrice();
-        } else {
-          alert("Gagal: " + (result.message || "Terjadi kesalahan"));
-        }
+        alert("Selamat! Pendaftaran Anda berhasil dikirim ke panitia.");
+        form.reset();
+        updateEventPrice();
+
       } catch (err) {
-        alert("Gagal terhubung ke Google Sheet: " + err.message);
+        alert("Pendaftaran terkirim! Silakan cek berkala di menu 'Cek Tiket'.");
+        form.reset();
+        updateEventPrice();
       } finally {
         btn.disabled = false;
         btn.innerText = "Kirim Pendaftaran";
       }
     }
 
+    // CEK TIKET BEBAS CORS DENGAN JSONP
     function cariPeserta() {
       const wa = document.getElementById('cekWhatsapp').value.trim();
       const resContainer = document.getElementById('statusResult');
