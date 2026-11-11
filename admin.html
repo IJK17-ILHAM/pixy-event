@@ -54,8 +54,8 @@
       <div>
         <div class="flex items-center gap-2">
           <span class="text-[10px] sm:text-xs bg-[#A3D9C9] text-[#1C1B1F] px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider">Akses Admin</span>
-          <span id="liveStatusBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Aktif
+          <span id="liveBadge" class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-400/40 px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Real-time Aktif
           </span>
         </div>
         <h1 class="font-serif-chic text-xl sm:text-3xl font-bold mt-2">Dasbor Pengelola Acara</h1>
@@ -95,7 +95,7 @@
       </div>
     </div>
 
-    <!-- TAB MENU NAVIGASI (Mobile Friendly Horizontal Scroll / Wrap) -->
+    <!-- TAB MENU NAVIGASI (RESPONSIF MOBILE) -->
     <div class="grid grid-cols-3 sm:flex sm:flex-wrap items-center gap-1.5 p-1 bg-white rounded-2xl sm:rounded-full border border-[#F7C1D1] shadow-sm text-center">
       <button onclick="switchAdminTab('peserta')" id="tab-btn-peserta" class="px-2 sm:px-5 py-2.5 rounded-xl sm:rounded-full text-[11px] sm:text-xs font-bold transition bg-[#1C1B1F] text-white shadow-sm flex flex-col sm:flex-row items-center justify-center gap-1">
         <i class="fa-solid fa-users"></i>
@@ -115,7 +115,6 @@
     <section id="panel-peserta" class="space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] shadow-sm overflow-hidden">
         
-        <!-- Header Filter -->
         <div class="px-4 py-3 sm:px-6 sm:py-4 border-b border-[#F7C1D1] flex flex-col sm:flex-row justify-between sm:items-center gap-2.5">
           <h3 class="font-serif-chic font-bold text-[#1C1B1F] text-base sm:text-lg">Daftar Pendaftar (Sheets)</h3>
           <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -126,12 +125,12 @@
           </div>
         </div>
 
-        <!-- TAMPILAN MOBILE: KARTU PESERTA (Muncul di layar kecil < 768px) -->
+        <!-- TAMPILAN MOBILE KHUSUS HP (CARD VIEW) -->
         <div id="mobileParticipantList" class="block md:hidden divide-y divide-[#F7C1D1]/50 p-2 space-y-2">
-          <div class="text-center py-8 text-[#8E6145] text-xs">Memuat data...</div>
+          <div class="text-center py-8 text-[#8E6145] text-xs">Memuat data dari Google Sheets...</div>
         </div>
 
-        <!-- TAMPILAN DESKTOP: TABEL LEBAR (Muncul di layar >= 768px) -->
+        <!-- TAMPILAN DESKTOP (TABLE VIEW) -->
         <div class="hidden md:block overflow-x-auto">
           <table class="w-full text-left text-sm text-[#1C1B1F]">
             <thead class="bg-[#FAEEE8] text-[#8E6145] text-xs uppercase font-bold">
@@ -147,7 +146,7 @@
               </tr>
             </thead>
             <tbody id="participantTableBody" class="divide-y divide-[#F7C1D1]/40">
-              <tr><td colspan="8" class="text-center py-8 text-[#8E6145]">Memuat data...</td></tr>
+              <tr><td colspan="8" class="text-center py-8 text-[#8E6145]">Memuat data dari Google Sheets...</td></tr>
             </tbody>
           </table>
         </div>
@@ -155,7 +154,7 @@
       </div>
     </section>
 
-    <!-- PANEL 2: STATISTIK KATEGORI ACARA -->
+    <!-- PANEL 2: STATISTIK -->
     <section id="panel-statistik" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex justify-between items-center border-b border-[#F7C1D1]/60 pb-3">
@@ -171,7 +170,7 @@
       </div>
     </section>
 
-    <!-- PANEL 3: KELOLA ACARA & LINK SERTIFIKAT -->
+    <!-- PANEL 3: KELOLA ACARA -->
     <section id="panel-acara" class="hidden space-y-4">
       <div class="bg-white rounded-2xl sm:rounded-[2rem] border border-[#F7C1D1] p-4 sm:p-6 lg:p-8 shadow-sm space-y-4">
         <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-[#F7C1D1]/60 pb-3">
@@ -196,7 +195,7 @@
       <form onsubmit="handleSaveEvent(event)" class="space-y-3.5">
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Acara & Lokasi</label>
-          <input type="text" id="evNama" required placeholder="Contoh: Beauty Talkshow Bali" class="w-full px-3 py-2 rounded-xl border border-[#D4A394] text-xs sm:text-sm">
+          <input type="text" id="evNama" required placeholder="Contoh: Beauty Class Bali" class="w-full px-3 py-2 rounded-xl border border-[#D4A394] text-xs sm:text-sm">
         </div>
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Harga Tiket (Rp)</label>
@@ -321,6 +320,7 @@
     let participants = [];
     let uploadedQrisBase64 = "";
     let isEditSubmitting = false;
+    let isFetching = false;
     let autoRefreshTimer = null;
 
     let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
@@ -358,12 +358,11 @@
         // Ambil data pertama
         fetchSheetData(false);
 
-        // Auto Refresh berkala (setiap 10 detik)
-        if (!autoRefreshTimer) {
-          autoRefreshTimer = setInterval(() => {
-            fetchSheetData(true);
-          }, 10000);
-        }
+        // Auto Refresh tiap 5 Detik secara Real-time
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        autoRefreshTimer = setInterval(() => {
+          fetchSheetData(true);
+        }, 5000);
       } else {
         alert('Username atau Password Admin salah!');
       }
@@ -525,8 +524,11 @@
       }
     }
 
-    // PENGAMBILAN DATA HYBRID (FETCH + JSONP)
+    // PENGAMBIL DATA MULTI-JALUR ANTI-BLOKIR BROWSER HP
     async function fetchSheetData(silent = false) {
+      if (isFetching) return;
+      isFetching = true;
+
       const tbody = document.getElementById('participantTableBody');
       const mobileList = document.getElementById('mobileParticipantList');
 
@@ -536,45 +538,50 @@
         mobileList.innerHTML = loadingHtml;
       }
 
+      const timestamp = new Date().getTime();
+      const directUrl = `${SCRIPT_URL}?_nocache=${timestamp}`;
+
+      // JALUR 1: Coba ambil langsung dari Google
       try {
-        const res = await fetch(`${SCRIPT_URL}?t=${Date.now()}`);
+        const res = await fetch(directUrl, {
+          method: 'GET',
+          cache: 'no-store',
+          redirect: 'follow'
+        });
+        if (!res.ok) throw new Error("HTTP error " + res.status);
         const data = await res.json();
-        if (data && data.status === "error") throw new Error(data.message);
-        participants = Array.isArray(data) ? data : [];
-        updateKPICounters();
-        renderAdminView();
-        renderStatsCards();
-      } catch (err) {
-        // Fallback jika fetch browser mobile terhalang CORS
-        fetchViaJSONP(silent);
+        handleDataSuccess(data);
+        isFetching = false;
+        return;
+      } catch (directErr) {
+        // Jika gagal karena Safari/Android memblokir, lanjutkan ke Jalur 2
       }
-    }
 
-    function fetchViaJSONP(silent) {
-      const oldScript = document.getElementById('jsonp-script');
-      if (oldScript) oldScript.remove();
-
-      window.handleSheetResponse = function(data) {
-        if (data && data.status === "error") return;
-        participants = Array.isArray(data) ? data : [];
-        updateKPICounters();
-        renderAdminView();
-        renderStatsCards();
-      };
-
-      const script = document.createElement('script');
-      script.id = 'jsonp-script';
-      script.src = `${SCRIPT_URL}?callback=handleSheetResponse&t=${Date.now()}`;
-      script.onerror = function() {
+      // JALUR 2: Gunakan Proxy Resmi Allorigins (Anti-Blokir Safari iPhone & Android)
+      try {
+        const proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(directUrl)}`;
+        const pRes = await fetch(proxyUrl, { cache: 'no-store' });
+        if (!pRes.ok) throw new Error("Proxy error");
+        const pData = await pRes.json();
+        handleDataSuccess(pData);
+      } catch (proxyErr) {
         if (!silent && participants.length === 0) {
           const errMsg = `<div class="p-4 text-center text-rose-600 font-semibold text-xs leading-relaxed">
-            Gagal terhubung ke Apps Script.<br>Pastikan deployment disetel ke <b>"Who has access: Anyone"</b>.
+            Gagal menghubungkan ke data Google Sheets.<br>Periksa jaringan internet Anda atau buka ulang browser.
           </div>`;
           document.getElementById('participantTableBody').innerHTML = `<tr><td colspan="8">${errMsg}</td></tr>`;
           document.getElementById('mobileParticipantList').innerHTML = errMsg;
         }
-      };
-      document.body.appendChild(script);
+      } finally {
+        isFetching = false;
+      }
+    }
+
+    function handleDataSuccess(data) {
+      participants = Array.isArray(data) ? data : [];
+      updateKPICounters();
+      renderAdminView();
+      renderStatsCards();
     }
 
     function updateKPICounters() {
@@ -584,7 +591,6 @@
       document.getElementById('stat-attended').innerText = participants.filter(p => getVal(p, ['Kehadiran', 'kehadiran']) === "Hadir").length;
     }
 
-    // RENDER TABEL DESKTOP & KARTU MOBILE SECARA OTOMATIS
     function renderAdminView() {
       const tbody = document.getElementById('participantTableBody');
       const mobileList = document.getElementById('mobileParticipantList');
@@ -602,11 +608,10 @@
         return;
       }
 
-      // 1. Render Tampilan Mobile (Card View)
+      // Render Mobile Card List
       mobileList.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
-        const email = getVal(p, ['Email', 'email']) || '-';
         const acara = getVal(p, ['Pilihan Acara', 'acara', 'Acara', 'Pilihan']) || '-';
         const kategori = getVal(p, ['Kategori', 'kategori']) || '-';
         const atasNamaTf = getVal(p, ['Atas Nama TF', 'namaPengirim', 'Pengirim']) || '-';
@@ -647,7 +652,7 @@
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${kehadiran === 'Hadir' ? 'bg-[#A3D9C9] text-[#1C1B1F]' : 'bg-gray-100 text-gray-600'}">${kehadiran}</span>
               </div>
               ${isUrlValid 
-                ? `<a href="${bukti}" target="_blank" class="px-2.5 py-1 bg-white border border-[#D4A394] text-[#8E6145] rounded-full text-[10px] font-bold inline-flex items-center gap-1 shadow-2xs">
+                ? `<a href="${bukti}" target="_blank" class="px-2.5 py-1 bg-white border border-[#D4A394] text-[#8E6145] rounded-full text-[10px] font-bold inline-flex items-center gap-1">
                      <i class="fa-solid fa-file-invoice"></i> Bukti
                    </a>`
                 : `<span class="text-[10px] text-gray-400 italic">No Bukti</span>`
@@ -657,7 +662,7 @@
         `;
       }).join('');
 
-      // 2. Render Tampilan Desktop (Table View)
+      // Render Desktop Table View
       tbody.innerHTML = filtered.map((p, index) => {
         const nama = getVal(p, ['Nama Lengkap', 'nama', 'Nama']) || '-';
         const wa = getVal(p, ['WhatsApp', 'whatsapp', 'Whatspp', 'Kontak', 'No WhatsApp']) || '-';
