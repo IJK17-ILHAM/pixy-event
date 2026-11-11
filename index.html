@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Pendaftaran Acara & Cek Tiket</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,29 +14,29 @@
     .font-serif-chic { font-family: 'Playfair Display', serif; }
   </style>
 </head>
-<body class="min-h-screen py-8 px-4 sm:px-6 lg:px-8">
+<body class="min-h-screen py-6 px-3 sm:py-8 sm:px-6 lg:px-8">
 
   <iframe name="hidden_iframe" id="hidden_iframe" style="display:none;" onload="onIframeLoaded()"></iframe>
 
-  <div class="max-w-2xl mx-auto space-y-8">
+  <div class="max-w-2xl mx-auto space-y-6 sm:space-y-8">
     
     <!-- HEADER -->
     <div class="text-center space-y-2">
-      <span class="text-xs font-bold uppercase tracking-widest text-[#8E6145] bg-[#F7C1D1]/40 px-3 py-1 rounded-full">Official Event</span>
-      <h1 id="viewJudulAcara" class="font-serif-chic text-3xl sm:text-4xl font-bold text-[#1C1B1F]">Beauty is in all of us</h1>
-      <p id="viewSubJudulAcara" class="text-sm text-[#8E6145] max-w-md mx-auto">Daftarkan kehadiran Anda dan dapatkan sertifikat resmi serta materi eksklusif kegiatan.</p>
+      <span class="text-[11px] sm:text-xs font-bold uppercase tracking-widest text-[#8E6145] bg-[#F7C1D1]/40 px-3 py-1 rounded-full">Official Event</span>
+      <h1 id="viewJudulAcara" class="font-serif-chic text-2xl sm:text-4xl font-bold text-[#1C1B1F]">Beauty is in all of us</h1>
+      <p id="viewSubJudulAcara" class="text-xs sm:text-sm text-[#8E6145] max-w-md mx-auto px-2">Daftarkan kehadiran Anda dan dapatkan sertifikat resmi serta materi eksklusif kegiatan.</p>
     </div>
 
     <!-- TAB MENU CUSTOMER -->
     <div class="flex justify-center">
-      <div class="bg-white p-1 rounded-full border border-[#F7C1D1] inline-flex gap-1 shadow-sm">
-        <button onclick="switchTab('daftar')" id="btn-tab-daftar" class="px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition">Formulir Pendaftaran</button>
-        <button onclick="switchTab('status')" id="btn-tab-status" class="px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition">Cek Tiket / Sertifikat</button>
+      <div class="bg-white p-1 rounded-full border border-[#F7C1D1] inline-flex gap-1 shadow-sm w-full sm:w-auto">
+        <button onclick="switchTab('daftar')" id="btn-tab-daftar" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition text-center">Form Pendaftaran</button>
+        <button onclick="switchTab('status')" id="btn-tab-status" class="flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition text-center">Cek Tiket / Sertifikat</button>
       </div>
     </div>
 
     <!-- SECTION 1: FORM PENDAFTARAN -->
-    <div id="section-daftar" class="bg-white rounded-[2rem] p-6 sm:p-8 border border-[#F7C1D1] shadow-md space-y-6">
+    <div id="section-daftar" class="bg-white rounded-3xl sm:rounded-[2rem] p-5 sm:p-8 border border-[#F7C1D1] shadow-md space-y-5">
       <form id="mainRegForm" method="POST" target="hidden_iframe" onsubmit="handleFormSubmit(event)" action="https://script.google.com/macros/s/AKfycbwN6RIskfGEFRRgnLTpVyepS27qJZ0MeY8l944jYa0c7sk0-VyRCL9XIsx-stSEBCjbXQ/exec" class="space-y-4">
         
         <input type="hidden" name="action" value="register">
@@ -44,24 +44,24 @@
 
         <div>
           <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nama Lengkap Sesuai Sertifikat *</label>
-          <input type="text" name="nama" id="custNama" required placeholder="Contoh: Jessica Olivia" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+          <input type="text" name="nama" id="custNama" required placeholder="Contoh: Jessica Olivia" class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Nomor WhatsApp *</label>
-            <input type="tel" name="whatsapp" id="custWhatsapp" required placeholder="08123456789" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+            <input type="tel" name="whatsapp" id="custWhatsapp" required placeholder="08123456789" class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
           </div>
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Alamat Email *</label>
-            <input type="email" name="email" id="custEmail" required placeholder="nama@email.com" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+            <input type="email" name="email" id="custEmail" required placeholder="nama@email.com" class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
           </div>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Kategori Peserta *</label>
-            <select name="kategori" id="custKategori" required class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none bg-white">
+            <select name="kategori" id="custKategori" required class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none bg-white font-medium">
               <option value="Mahasiswa / Pelajar">Mahasiswa / Pelajar</option>
               <option value="Umum / Profesional">Umum / Profesional</option>
               <option value="Anggota / Internal">Anggota / Internal</option>
@@ -69,60 +69,65 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Pilihan Acara / Lokasi *</label>
-            <select name="acara" id="custAcara" onchange="updateEventPrice()" required class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none bg-white">
+            <select name="acara" id="custAcara" onchange="updateEventPrice()" required class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none bg-white font-medium">
             </select>
           </div>
         </div>
 
         <!-- INFO PEMBAYARAN -->
-        <div class="bg-[#FAEEE8] p-5 rounded-2xl border border-[#D4A394] space-y-3">
+        <div class="bg-[#FAEEE8] p-4 sm:p-5 rounded-2xl border border-[#D4A394] space-y-3">
+          <!-- REVISI BIAYA TIKET MENJADI HTM -->
           <div class="flex justify-between items-center">
-            <span class="text-xs font-bold text-[#8E6145]">Biaya Tiket:</span>
-            <span id="custHargaText" class="font-bold text-lg text-[#1C1B1F]">Rp 0,-</span>
+            <span class="text-xs font-bold text-[#8E6145] uppercase tracking-wider">HTM:</span>
+            <span id="custHargaText" class="font-bold text-base sm:text-lg text-[#1C1B1F]">Rp 0,-</span>
           </div>
 
           <div class="text-xs text-[#8E6145] border-t border-[#D4A394]/40 pt-3 space-y-1">
-            <p>Silakan transfer ke rekening:</p>
+            <p>Silakan transfer pembayaran ke:</p>
             <p class="font-bold text-sm text-[#1C1B1F]"><span id="infoBank">BCA</span> - <span id="infoRekening">1234-5678-90</span></p>
             <p>a.n <span id="infoAtasNama">Panitia Resmi PIXY</span></p>
           </div>
 
-          <div id="qrisSection" class="hidden text-center pt-2">
-            <p class="text-[11px] font-bold text-[#8E6145] mb-2 uppercase">Atau Scan QRIS di bawah ini:</p>
-            <img id="imgQrisCustomer" src="" alt="QRIS Acara" class="w-48 h-48 mx-auto object-contain bg-white rounded-xl p-2 border border-[#D4A394] shadow-sm">
+          <!-- BAGIAN QRIS DI HP & PC -->
+          <div id="qrisSection" class="text-center pt-2 border-t border-[#D4A394]/40">
+            <p class="text-[11px] font-bold text-[#8E6145] mb-2 uppercase tracking-wide">
+              <i class="fa-solid fa-qrcode mr-1"></i> Scan QRIS Pembayaran:
+            </p>
+            <img id="imgQrisCustomer" src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=PEMBAYARAN_PIXY_EVENT" alt="QRIS Acara" class="w-40 h-40 sm:w-48 sm:h-48 mx-auto object-contain bg-white rounded-2xl p-2 border border-[#D4A394] shadow-sm">
+            <span class="text-[10px] text-[#8E6145] block mt-1">Mendukung Gopay, OVO, Dana, ShopeePay, BCA, dll.</span>
           </div>
         </div>
 
         <!-- ATAS NAMA PENGIRIM TRANSFER & BUKTI -->
-        <div class="bg-white p-4 rounded-2xl border border-[#D4A394] space-y-3">
+        <div class="bg-white p-3.5 sm:p-4 rounded-2xl border border-[#D4A394] space-y-3">
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Transfer Atas Nama (Nama Pengirim Rekening / E-Wallet) *</label>
-            <input type="text" name="namaPengirim" id="custPengirim" required placeholder="Contoh: Jessica / Rekening Ayah / OVO Jessica" class="w-full px-4 py-2.5 rounded-xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
-            <span class="text-[10px] text-gray-500">Nama ini akan dijadikan nama file bukti pembayaran Anda di Google Drive.</span>
+            <input type="text" name="namaPengirim" id="custPengirim" required placeholder="Contoh: Jessica / Rekening Ayah / OVO Jessica" class="w-full px-3.5 py-2.5 rounded-xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+            <span class="text-[10px] text-gray-500 block mt-0.5">Nama ini akan dijadikan nama file bukti pembayaran Anda.</span>
           </div>
 
           <div>
             <label class="block text-xs font-semibold text-[#8E6145] mb-1">Upload Bukti Transfer (JPG/PNG) *</label>
-            <input type="file" id="custBukti" required accept="image/*" class="w-full text-xs text-[#8E6145] file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1C1B1F] file:text-white cursor-pointer">
+            <input type="file" id="custBukti" required accept="image/*" class="w-full text-xs text-[#8E6145] file:mr-3 file:py-2 file:px-3 sm:file:py-2.5 sm:file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-semibold file:bg-[#1C1B1F] file:text-white cursor-pointer">
           </div>
         </div>
 
-        <button type="submit" id="btnSubmitDaftar" class="w-full py-4 bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold rounded-2xl text-sm transition shadow-md">
+        <button type="submit" id="btnSubmitDaftar" class="w-full py-3.5 sm:py-4 bg-[#1C1B1F] hover:bg-[#8E6145] text-white font-semibold rounded-2xl text-sm transition shadow-md">
           Kirim Pendaftaran
         </button>
       </form>
     </div>
 
     <!-- SECTION 2: CEK STATUS & SERTIFIKAT -->
-    <div id="section-status" class="hidden bg-white rounded-[2rem] p-6 sm:p-8 border border-[#F7C1D1] shadow-md space-y-6">
+    <div id="section-status" class="hidden bg-white rounded-3xl sm:rounded-[2rem] p-5 sm:p-8 border border-[#F7C1D1] shadow-md space-y-5">
       <div>
-        <h3 class="font-serif-chic font-bold text-lg text-[#1C1B1F]">Cek Status & Akses Sertifikat</h3>
-        <p class="text-xs text-[#8E6145] mt-1">Masukkan Nomor WhatsApp yang Anda daftarkan sebelumnya.</p>
+        <h3 class="font-serif-chic font-bold text-base sm:text-lg text-[#1C1B1F]">Cek Status & Akses Sertifikat</h3>
+        <p class="text-xs text-[#8E6145] mt-0.5">Masukkan Nomor WhatsApp yang Anda daftarkan sebelumnya.</p>
       </div>
 
       <div class="flex gap-2">
-        <input type="tel" id="cekWhatsapp" placeholder="08123456789" class="w-full px-4 py-3 rounded-2xl border border-[#D4A394] text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
-        <button onclick="cariPeserta()" id="btnCariPeserta" class="px-6 py-3 bg-[#1C1B1F] hover:bg-[#8E6145] text-white rounded-2xl text-xs font-semibold shrink-0 transition">
+        <input type="tel" id="cekWhatsapp" placeholder="08123456789" class="w-full px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl border border-[#D4A394] text-xs sm:text-sm focus:ring-2 focus:ring-[#8E6145] outline-none">
+        <button onclick="cariPeserta()" id="btnCariPeserta" class="px-5 sm:px-6 py-2.5 sm:py-3 bg-[#1C1B1F] hover:bg-[#8E6145] text-white rounded-xl sm:rounded-2xl text-xs font-semibold shrink-0 transition">
           Cari Tiket
         </button>
       </div>
@@ -137,6 +142,7 @@
 
     let isSubmitted = false;
 
+    // KONFIGURASI DEFAULT BERSAMA GAMBAR QRIS DEFAULT
     let appConfig = JSON.parse(localStorage.getItem('pixy_event_config')) || {
       judulAcara: "Beauty is in all of us",
       subJudulAcara: "Daftarkan kehadiran Anda dan dapatkan sertifikat resmi serta materi eksklusif kegiatan.",
@@ -158,8 +164,8 @@
       document.getElementById('infoRekening').innerText = appConfig.rekening;
       document.getElementById('infoAtasNama').innerText = appConfig.atasNama;
 
-      if (appConfig.qrisImage) {
-        document.getElementById('qrisSection').classList.remove('hidden');
+      // JIKA ADMIN SUDAH UPLOAD QRIS KHUSUS, TAMPILKAN. JIKA BELUM, TETAP TAMPILKAN BARCODE QRIS STANDAR
+      if (appConfig.qrisImage && appConfig.qrisImage.trim() !== "") {
         document.getElementById('imgQrisCustomer').src = appConfig.qrisImage;
       }
 
@@ -185,13 +191,13 @@
       if (tab === 'daftar') {
         document.getElementById('section-daftar').classList.remove('hidden');
         document.getElementById('section-status').classList.add('hidden');
-        document.getElementById('btn-tab-daftar').className = 'px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition';
-        document.getElementById('btn-tab-status').className = 'px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition';
+        document.getElementById('btn-tab-daftar').className = 'flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition text-center';
+        document.getElementById('btn-tab-status').className = 'flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition text-center';
       } else {
         document.getElementById('section-daftar').classList.add('hidden');
         document.getElementById('section-status').classList.remove('hidden');
-        document.getElementById('btn-tab-status').className = 'px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition';
-        document.getElementById('btn-tab-daftar').className = 'px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition';
+        document.getElementById('btn-tab-status').className = 'flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold bg-[#1C1B1F] text-white transition text-center';
+        document.getElementById('btn-tab-daftar').className = 'flex-1 sm:flex-none px-4 sm:px-6 py-2 rounded-full text-xs font-bold text-[#8E6145] hover:bg-[#FAEEE8] transition text-center';
       }
     }
 
@@ -206,7 +212,7 @@
       }
 
       btn.disabled = true;
-      btn.innerText = "Mengunggah bukti ke Google Drive...";
+      btn.innerText = "Mengunggah data & bukti...";
 
       const file = fileInput.files[0];
       const reader = new FileReader();
@@ -255,6 +261,7 @@
       }
     }
 
+    // PENCARIAN TIKET RAMAH HP (ANTI-BLOKIR SAFARI / ANDROID)
     function cariPeserta() {
       const wa = document.getElementById('cekWhatsapp').value.trim();
       const resContainer = document.getElementById('statusResult');
@@ -264,60 +271,71 @@
       btn.disabled = true;
       btn.innerText = "...";
       resContainer.classList.remove('hidden');
-      resContainer.innerHTML = '<p class="text-xs text-[#8E6145] text-center">Memeriksa database...</p>';
+      resContainer.innerHTML = '<p class="text-xs text-[#8E6145] text-center"><i class="fa-solid fa-spinner fa-spin mr-1"></i> Memeriksa database...</p>';
 
-      const oldScript = document.getElementById('jsonp-search');
-      if (oldScript) oldScript.remove();
+      const uniqueCb = "search_cb_" + Math.floor(Math.random() * 10000000);
 
-      window.handleCustomerSearch = function(data) {
-        btn.disabled = false;
-        btn.innerText = "Cari Tiket";
+      window[uniqueCb] = function(data) {
+        try {
+          btn.disabled = false;
+          btn.innerText = "Cari Tiket";
 
-        const found = (Array.isArray(data) ? data : []).filter(d => String(d['WhatsApp'] || '').replace(/\D/g,'').includes(wa.replace(/\D/g,'')));
+          const cleanTarget = wa.replace(/\D/g, '');
+          const found = (Array.isArray(data) ? data : []).filter(d => {
+            const rowWa = String(d['WhatsApp'] || '').replace(/\D/g, '');
+            return rowWa.includes(cleanTarget) || cleanTarget.includes(rowWa);
+          });
 
-        if (!found || found.length === 0) {
-          resContainer.innerHTML = '<p class="text-xs text-rose-600 font-semibold text-center">Nomor WhatsApp belum terdaftar.</p>';
-          return;
-        }
+          if (!found || found.length === 0) {
+            resContainer.innerHTML = '<p class="text-xs text-rose-600 font-semibold text-center">Nomor WhatsApp belum terdaftar di database.</p>';
+            return;
+          }
 
-        resContainer.innerHTML = found.map(p => {
-          const acaraPeserta = p['Pilihan Acara'] || '-';
-          // Cari link drive sertifikat khusus acara ini
-          const evData = appConfig.daftarAcara.find(a => a.nama.toLowerCase().includes(acaraPeserta.toLowerCase()) || acaraPeserta.toLowerCase().includes(a.nama.toLowerCase()));
-          const driveUrlAcara = (evData && evData.driveSertifikat) ? evData.driveSertifikat : "https://drive.google.com";
+          resContainer.innerHTML = found.map(p => {
+            const acaraPeserta = p['Pilihan Acara'] || '-';
+            const evData = appConfig.daftarAcara.find(a => a.nama.toLowerCase().includes(acaraPeserta.toLowerCase()) || acaraPeserta.toLowerCase().includes(a.nama.toLowerCase()));
+            const driveUrlAcara = (evData && evData.driveSertifikat) ? evData.driveSertifikat : "https://drive.google.com";
 
-          return `
-            <div class="bg-[#FAEEE8] p-4 rounded-2xl border border-[#D4A394] space-y-2 text-xs">
-              <div class="flex justify-between items-start">
-                <div>
-                  <h4 class="font-bold text-sm text-[#1C1B1F]">${p['Nama Lengkap'] || '-'}</h4>
-                  <p class="text-[#8E6145]">${acaraPeserta}</p>
+            return `
+              <div class="bg-[#FAEEE8] p-3.5 sm:p-4 rounded-2xl border border-[#D4A394] space-y-2 text-xs">
+                <div class="flex justify-between items-start gap-2">
+                  <div>
+                    <h4 class="font-bold text-sm text-[#1C1B1F]">${p['Nama Lengkap'] || '-'}</h4>
+                    <p class="text-[#8E6145] text-[11px] font-semibold mt-0.5">${acaraPeserta}</p>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${p['Status Bayar'] === 'Terverifikasi' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
+                    ${p['Status Bayar'] || 'Menunggu'}
+                  </span>
                 </div>
-                <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${p['Status Bayar'] === 'Terverifikasi' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">
-                  ${p['Status Bayar'] || 'Menunggu'}
-                </span>
+                <div class="border-t border-[#D4A394]/30 pt-2 flex justify-between items-center gap-2">
+                  <span>Kehadiran: <b>${p['Kehadiran'] || 'Belum Hadir'}</b></span>
+                  ${(p['Kehadiran'] === 'Hadir') 
+                    ? `<a href="${driveUrlAcara}" target="_blank" class="px-3 py-1 bg-emerald-600 text-white rounded-full font-semibold text-[10px] hover:bg-emerald-700">Unduh Sertifikat</a>` 
+                    : `<span class="text-[10px] text-gray-500 italic">Sertifikat aktif setelah hadir</span>`
+                  }
+                </div>
               </div>
-              <div class="border-t border-[#D4A394]/30 pt-2 flex justify-between items-center">
-                <span>Kehadiran: <b>${p['Kehadiran'] || 'Belum Hadir'}</b></span>
-                ${(p['Kehadiran'] === 'Hadir') 
-                  ? `<a href="${driveUrlAcara}" target="_blank" class="px-3 py-1 bg-emerald-600 text-white rounded-full font-semibold text-[11px] hover:bg-emerald-700">Unduh Sertifikat</a>` 
-                  : `<span class="text-[10px] text-gray-500 italic">Sertifikat aktif setelah hadir</span>`
-                }
-              </div>
-            </div>
-          `;
-        }).join('');
+            `;
+          }).join('');
+        } finally {
+          delete window[uniqueCb];
+          const scriptEl = document.getElementById(uniqueCb);
+          if (scriptEl) scriptEl.remove();
+        }
       };
 
       const script = document.createElement('script');
-      script.id = 'jsonp-search';
-      script.src = `${SCRIPT_URL}?callback=handleCustomerSearch&t=${Date.now()}`;
+      script.id = uniqueCb;
+      script.src = `${SCRIPT_URL}?callback=${uniqueCb}&_t=${Date.now()}`;
       script.onerror = function() {
         btn.disabled = false;
         btn.innerText = "Cari Tiket";
+        delete window[uniqueCb];
+        if (script.parentNode) script.remove();
         resContainer.innerHTML = '<p class="text-xs text-rose-600 text-center">Gagal memeriksa status. Cek koneksi Anda.</p>';
       };
-      document.body.appendChild(script);
+
+      document.head.appendChild(script);
     }
 
     initUI();
